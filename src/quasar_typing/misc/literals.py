@@ -1,13 +1,18 @@
-from typing import Literal, Union
+from typing import Literal
 
-FWHMStrategyLike = Literal['narrowest', 'average', 'widest']
-ScaleLike =  Literal['global', 'semilocal', 'local']
-VariantLike = Literal['spectrum', 'standard', 'flexible', 'rigid']
-BootstrapTypeLike = Literal['spectrum', 'model', 'frequentist']
-VaryLinesLike = set[Union[Literal['all'], float]]
-OutWavesLike = set[Union[Literal['all'], float]]
-OutMeasuresLike = set[Union[Literal['all'], str]]
+FWHMStrategy_  = Literal['narrowest', 'average', 'widest']
+Scale_         = Literal['global', 'semilocal', 'local']
+Variant_       = Literal['spectrum', 'standard', 'flexible', 'rigid']
+BootstrapType_ = Literal['spectrum', 'model', 'frequentist']
 
-BGFluxLike = set[Literal['pl', 'fe', 'em']]
-_BGFluxLike = frozenset[Literal['pl', 'fe', 'em']]
-SuffixLike = Literal['raw', 'sc']
+VaryLines_   = frozenset[Literal['all'] | float]
+OutWaves_    = frozenset[Literal['all'] | float]
+OutMeasures_ = frozenset[Literal['all'] | str]
+
+# pl: power law, fe: iron emission, ba: Balmer (pseudo)continuum, 
+# hg: host galaxy, em: emission lines
+FluxComponent_ = Literal['pl', 'fe', 'ba', 'hg', 'em']
+BGFlux_ = frozenset[FluxComponent_]
+
+# raw: linear regression, sc: sigma-clipped linear regression
+Suffix_ = Literal['raw', 'sc']

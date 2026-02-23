@@ -1,6 +1,6 @@
 # quasar-typing
 
-A small Python project for Quasar typing utilities.
+A small Python project for pydantic-compatible typing utilities.
 
 ## Features
 
@@ -61,7 +61,3 @@ quasar-typing/
 ## License
 
 MIT License - see LICENSE file for details
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
