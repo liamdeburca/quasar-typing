@@ -30,7 +30,7 @@ class FittableArray_(NDArray):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(self, specs):
+    def __class_getitem__(cls, specs):
         if not isinstance(specs, tuple):
             specs = (specs,)
 
@@ -53,5 +53,9 @@ class FittableArray_(NDArray):
                     raise PydanticCustomError('validation_error', msg)
 
                 return array
+            
+            @classmethod
+            def __pydantic_get_core_schema__(cls, source_type, handler):
+                return no_info_plain_validator_function(cls._validate)
             
         return TypedFittableArray_

@@ -26,7 +26,7 @@ class SortedArray_(NDArray):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(self, dtype):
+    def __class_getitem__(cls, dtype):
         class TypedSortedArray_(SortedArray_):
             @classmethod
             def _validate(cls, value: object) -> NDArray:
@@ -38,5 +38,9 @@ class SortedArray_(NDArray):
                     raise PydanticCustomError('validation_error', msg)
 
                 return array
+            
+            @classmethod
+            def __pydantic_get_core_schema__(cls, source_type, handler):
+                return no_info_plain_validator_function(cls._validate)
             
         return TypedSortedArray_
