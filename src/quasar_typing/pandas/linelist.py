@@ -1,3 +1,5 @@
+__all__ = ['LineList', 'REQUIRED_COLUMNS']
+
 from pandas import DataFrame
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
@@ -12,11 +14,9 @@ REQUIRED_COLUMNS = [
     'scale_init', 'scale_lower', 'scale_upper'
 ]
 
-def _validate(value: object) -> object:
+def _validate(value: object) -> 'LineList':
     if not isinstance(value, DataFrame):
-        msg = "Expected pandas DataFrame, got {}".format(
-            type(value).__name__,
-        )
+        msg = f"Expected pandas DataFrame, got {type(value).__name__}"
         raise PydanticCustomError('validation_error', msg)
     
     missing_columns = [
@@ -24,25 +24,17 @@ def _validate(value: object) -> object:
         if col not in value.columns
     ]
     if len(missing_columns) > 0:
-        msg = "Line list DataFrame is missing required columns: "\
-            "{}".format(", ".join(missing_columns))
+        msg = "Line list DataFrame is missing required columns: "
+        msg += ", ".join(missing_columns)
         raise PydanticCustomError('validation_error', msg)
 
     return value
 
-class LineList_(DataFrame):
+class LineList(DataFrame):
     """
-    Type hint for validating line list DataFrames with pydantic.
+    pandas.DataFrame with specific columns (see LineList.required_columns)
     """
-    required_columns: list[str] = [
-        'name', 'n_max', 'needs_line',
-        'line', 
-        'strength_lower', 'strength_upper',
-        'v_off_lower', 'v_off_upper', 
-        'sigma_v_lower', 'sigma_v_upper',
-        'is_copy_of',
-        'scale_init', 'scale_lower', 'scale_upper'
-    ]
+    required_columns: list[str] = REQUIRED_COLUMNS
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(_validate)
