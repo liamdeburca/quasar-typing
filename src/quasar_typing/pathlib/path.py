@@ -24,9 +24,10 @@ class Path_(Path):
         if not isinstance(specs, tuple):
             specs = (specs,)
 
-        absolute: bool = specs[0] if len(specs) > 0 else None
-        exists: bool = specs[1] if len(specs) > 1 else True
-        ftype: str = specs[2] if len(specs) > 2 else None
+        doc: str = specs[0]
+        absolute: bool = specs[1] if len(specs) > 1 else None
+        exists: bool = specs[2] if len(specs) > 2 else True
+        ftype: str = specs[3] if len(specs) > 3 else None
 
         class TypedPath_(Path_):
             @classmethod
@@ -62,5 +63,7 @@ class Path_(Path):
                         raise PydanticCustomError("validation_error", msg)
                     
                 return path
+            
+        TypedPath_.__doc__ = doc
             
         return TypedPath_
