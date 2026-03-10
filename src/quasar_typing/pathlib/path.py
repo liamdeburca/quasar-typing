@@ -1,4 +1,3 @@
-from typing import Self
 from pathlib import Path
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
@@ -20,7 +19,7 @@ class Path_(Path):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(cls, specs) -> Self:
+    def __class_getitem__(cls, specs) -> type['Path_']:
         if not isinstance(specs, tuple):
             specs = (specs,)
 

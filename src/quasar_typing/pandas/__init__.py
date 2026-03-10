@@ -1,2 +1,4 @@
-from .dataframe import DataFrameLike
-from .linelist import LineListLike
+__all__ = ["DataFrame_", "LineList"]
+
+from .dataframe import DataFrame_
+from .linelist import LineList

@@ -7,10 +7,10 @@ name = "quasar-typing"
 version = "0.1.0"
 description = "A small Python project for Quasar typing utilities"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 license = {text = "MIT"}
 authors = [
-    {name = "Liam", email = "liam@example.com"}
+    {name = "Liam", email = "liam_deburca@me.com"}
 ]
 keywords = ["quasar", "typing"]
 classifiers = [
@@ -44,13 +44,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/quasar-typing"
-Documentation = "https://quasar-typing.readthedocs.io"
-Repository = "https://github.com/yourusername/quasar-typing.git"
-"Bug Tracker" = "https://github.com/yourusername/quasar-typing/issues"
+Homepage = "https://github.com/liamdeburca/quasar-typing"
+Repository = "https://github.com/liamdeburca/quasar-typing.git"
+"Bug Tracker" = "https://github.com/liamdeburca/quasar-typing/issues"
 
 [tool.setuptools]
-packages = ["quasar_typing"]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
