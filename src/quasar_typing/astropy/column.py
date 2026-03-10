@@ -7,13 +7,10 @@ class Column_(Column):
     Type hint for validating any Column with pydantic.
     """
     @classmethod
-    def _validate(value: object) -> object:
+    def _validate(cls, value: object) -> Column:
         if not isinstance(value, Column):
-            msg = "Expected astropy Column, got {}".format(
-                type(value).__name__,
-            )
+            msg = f"Expected astropy Column, got {type(value).__name__}"
             raise PydanticCustomError('validation_error', msg)
-
         return value
     
     @classmethod

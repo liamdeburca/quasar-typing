@@ -2,6 +2,9 @@ from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
 class CoordBounds(tuple[float, float]):
+    """
+    2-tuple of 'float' (must be increasing)
+    """
     @classmethod
     def _validate(cls, value: object) -> tuple[float, float]:
         if not isinstance(value, tuple):

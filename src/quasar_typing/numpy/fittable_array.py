@@ -30,7 +30,7 @@ class FittableArray_(NDArray):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(cls, specs):
+    def __class_getitem__(cls, specs) -> type['FittableArray_']:
         if not isinstance(specs, tuple):
             specs = (specs,)
 

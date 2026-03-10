@@ -26,7 +26,7 @@ class SortedArray_(NDArray):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(cls, specs):
+    def __class_getitem__(cls, specs) -> type['SortedArray_']:
         doc: str = specs[0]
         dtype = specs[1]
 

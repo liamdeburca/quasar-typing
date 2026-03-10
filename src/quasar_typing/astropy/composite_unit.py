@@ -1,15 +1,15 @@
-from astropy.table import QTable
+from astropy.units import CompositeUnit
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
-class QTable_(QTable):
+class CompositeUnit_(CompositeUnit):
     """
-    astropy.table.QTable
+    astropy.units.CompositeUnit
     """
     @classmethod
-    def _validate(cls, value: object) -> QTable:
-        if not isinstance(value, QTable):
-            msg = f"Expected astropy QTable, got {type(value).__name__}"
+    def _validate(cls, value: object) -> CompositeUnit:
+        if not isinstance(value, CompositeUnit):
+            msg = f"Expected astropy CompositeUnit, got {type(value).__name__}"
             raise PydanticCustomError('validation_error', msg)
         return value
     

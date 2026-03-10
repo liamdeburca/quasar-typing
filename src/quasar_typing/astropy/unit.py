@@ -4,16 +4,13 @@ from pydantic_core.core_schema import no_info_plain_validator_function
 
 class Unit_(Unit):
     """
-    Type hint for validating astropy Unit with pydantic.
+    astropy.units.Unit
     """
     @classmethod
-    def _validate(value: object) -> object:
+    def _validate(cls, value: object) -> Unit:
         if not isinstance(value, Unit):
-            msg = "Expected astropy Unit, got {}".format(
-                type(value).__name__,
-            )
+            msg = f"Expected astropy Unit, got {type(value).__name__}"
             raise PydanticCustomError('validation_error', msg)
-
         return value
     
     @classmethod

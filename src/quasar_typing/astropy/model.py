@@ -1,15 +1,15 @@
-from astropy.table import QTable
+from astropy.modeling import Model
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
-class QTable_(QTable):
+class Model_(Model):
     """
-    astropy.table.QTable
+    astropy.modeling.Model
     """
     @classmethod
-    def _validate(cls, value: object) -> QTable:
-        if not isinstance(value, QTable):
-            msg = f"Expected astropy QTable, got {type(value).__name__}"
+    def _validate(cls, value: object) -> Model:
+        if not isinstance(value, Model):
+            msg = f"Expected astropy Model, got {type(value).__name__}"
             raise PydanticCustomError('validation_error', msg)
         return value
     

@@ -1,4 +1,3 @@
-from typing import Self
 from numpy import ndarray, issubdtype
 from numpy.typing import NDArray
 from pydantic_core import PydanticCustomError
@@ -17,7 +16,7 @@ class Array_(NDArray):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(cls, specs) -> Self:
+    def __class_getitem__(cls, specs) -> type['Array_']:
         if not isinstance(specs, tuple):
             specs = (specs,)
 

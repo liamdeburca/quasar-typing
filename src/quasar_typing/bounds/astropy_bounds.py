@@ -3,9 +3,7 @@ from pydantic_core.core_schema import no_info_plain_validator_function
 
 class AstropyBounds(tuple[float | None, float | None]):
     """
-    Type hint for validating coordinate bounds tuples with pydantic.
-    Each tuple must contain exactly 2 elements representing the lower
-    and upper bounds respectively. Elements can be of type 'float' or 'None'.
+    2-tuple of 'float' or 'None'
     """
     @classmethod
     def _validate(cls, value: object) -> tuple[float | None, float | None]:
