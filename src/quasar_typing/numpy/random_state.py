@@ -3,6 +3,9 @@ from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
 class RandomState_(RandomState):
+    """
+    numpy.random.RandomState
+    """
     @classmethod
     def _validate(cls, value: object) -> RandomState:
         if not isinstance(value, RandomState):

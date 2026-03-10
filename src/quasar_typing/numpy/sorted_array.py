@@ -7,7 +7,7 @@ class SortedArray_(NDArray):
     @classmethod
     def _validate(cls, value: object) -> NDArray:
         if not isinstance(value, ndarray):
-            msg = f'Expected numpy array, got {type(value)}'
+            msg = f"Expected numpy array, got {type(value)}"
             raise PydanticCustomError('validation_error', msg)
         
         if not value.size > 0:
@@ -16,7 +16,7 @@ class SortedArray_(NDArray):
             raise PydanticCustomError('validation_error', msg)
         
         if not (diff(value) > 0).all():
-            msg = 'Expected sorted numpy array, got unsorted array'
+            msg = "Expected sorted numpy array, got unsorted array"
             raise PydanticCustomError('validation_error', msg)
         
         return value
@@ -26,15 +26,18 @@ class SortedArray_(NDArray):
         return no_info_plain_validator_function(cls._validate)
     
     @classmethod
-    def __class_getitem__(cls, dtype):
+    def __class_getitem__(cls, specs):
+        doc: str = specs[0]
+        dtype = specs[1]
+
         class TypedSortedArray_(SortedArray_):
             @classmethod
             def _validate(cls, value: object) -> NDArray:
                 array = super()._validate(value)
 
                 if dtype is not None and not issubdtype(array.dtype, dtype):
-                    msg = f'Expected numpy array of dtype {dtype}, " \
-                        "got {array.dtype}'
+                    msg = f"Expected numpy array of dtype {dtype}, \
+                        got {array.dtype}"
                     raise PydanticCustomError('validation_error', msg)
 
                 return array
@@ -42,5 +45,7 @@ class SortedArray_(NDArray):
             @classmethod
             def __pydantic_get_core_schema__(cls, source_type, handler):
                 return no_info_plain_validator_function(cls._validate)
+            
+        TypedSortedArray_.__doc__ = doc
             
         return TypedSortedArray_

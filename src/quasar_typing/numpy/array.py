@@ -21,8 +21,9 @@ class Array_(NDArray):
         if not isinstance(specs, tuple):
             specs = (specs,)
 
-        dtype = specs[0]
-        ndim = specs[1] if len(specs) > 1 else None        
+        doc = specs[0]
+        dtype = specs[1]
+        ndim = specs[2] if len(specs) > 2 else None        
 
         class TypedArray_(Array_):
             @classmethod
@@ -44,5 +45,7 @@ class Array_(NDArray):
             @classmethod
             def __pydantic_get_core_schema__(cls, source_type, handler):
                 return no_info_plain_validator_function(cls._validate)
+            
+        TypedArray_.__doc__ = doc
             
         return TypedArray_
