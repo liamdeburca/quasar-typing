@@ -48,5 +48,5 @@ class FittableCoordsTuple(tuple[NDArray[float64]]):
         return value
     
     @classmethod
-    def __pydantic_get_core_schema__(cls, source_type, handler):
+    def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(cls._validate)
