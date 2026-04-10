@@ -8,16 +8,14 @@ class CoordBounds(tuple[float, float]):
     @classmethod
     def _validate(cls, value: object) -> tuple[float, float]:
         if not isinstance(value, tuple):
-            msg = "Value must be a 'tuple', not '{}'!".format(
-                type(value).__name__,
-            )
+            msg = f"Value must be a 'tuple', not '{type(value).__name__}'!"
             raise PydanticCustomError('validation_error', msg)
         
         if not len(value) == 2:
-            msg = "Tuple must only contain 2 values, not '{}'!"
+            msg = f"Tuple must only contain 2 values, not '{len(value)}'!"
             raise PydanticCustomError('validation_error', msg)
         
-        if not all(isinstance(_, float) for _ in value):
+        if not all(isinstance(_, (float, int)) for _ in value):
             msg = "Tuple elements must be of type 'float'!"
             raise PydanticCustomError('validation_error', msg)
         
@@ -25,7 +23,7 @@ class CoordBounds(tuple[float, float]):
             msg = "Tuple must be 'increasing'!"
             raise PydanticCustomError('validation_error', msg)
 
-        return value
+        return (float(value[0]), float(value[1]))
     
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):

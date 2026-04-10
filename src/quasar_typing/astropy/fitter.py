@@ -42,9 +42,10 @@ class Fitter_(Fitter):
             raise PydanticCustomError('validation_error', msg)
         
         if not any(isinstance(value, fitter) for fitter in AVAILABLE_FITTERS):
-            msg = "Expected astropy Fitter of type {}, got {}".format(
-                ", ".join(fitter.__name__ for fitter in AVAILABLE_FITTERS),
-                type(value).__name__,
+            msg = (
+                f"Expected astropy Fitter of type "
+                f"{', '.join(fitter.__name__ for fitter in AVAILABLE_FITTERS)}, "
+                f"got {type(value).__name__}"
             )
             raise PydanticCustomError('validation_error', msg)
         return value

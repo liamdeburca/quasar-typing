@@ -8,15 +8,11 @@ class AstropyBounds(tuple[float | None, float | None]):
     @classmethod
     def _validate(cls, value: object) -> tuple[float | None, float | None]:
         if not isinstance(value, tuple):
-            msg = "Value must be a 'tuple', not '{}'!".format(
-                type(value).__name__,
-            )
+            msg = f"Value must be a 'tuple', not '{type(value).__name__}'!"
             raise PydanticCustomError('validation_error', msg)
         
         if not len(value) == 2:
-            msg = "Tuple must only contain 2 values, not '{}'!".format(
-                len(value),
-            )
+            msg = f"Tuple must only contain 2 values, not '{len(value)}'!"
             raise PydanticCustomError('validation_error', msg)
         
         if all(val is None for val in value):

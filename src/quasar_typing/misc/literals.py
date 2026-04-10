@@ -1,18 +1,20 @@
-from typing import Literal
+__all__ = [
+    'Method',
+    'FWHMStrategy',
+    'Scale',
+    'Variant',
+    'BootstrapType',
+    'FluxComponent',
+    'FluxContributions',
+    'Suffix',
+]
+from typing import Literal, FrozenSet
 
-FWHMStrategy  = Literal['narrowest', 'average', 'widest']
-Scale         = Literal['global', 'semilocal', 'local']
-Variant       = Literal['spectrum', 'standard', 'flexible', 'rigid']
-BootstrapType = Literal['spectrum', 'model', 'frequentist']
-
-VaryLines   = frozenset[Literal['all'] | float]
-OutWaves    = frozenset[Literal['all'] | float]
-OutMeasures = frozenset[Literal['all'] | str]
-
-# pl: power law, fe: iron emission, ba: Balmer (pseudo)continuum, 
-# hg: host galaxy, em: emission lines
-FluxComponent = Literal['pl', 'fe', 'ba', 'hg', 'em']
-BGFlux = frozenset[FluxComponent]
-
-# raw: linear regression, sc: sigma-clipped linear regression
-Suffix = Literal['raw', 'sc']
+type Method = Literal['bootstrap']
+type FWHMStrategy = Literal['narrowest', 'average', 'widest']
+type Scale = Literal['global', 'semilocal', 'local']
+type Variant = Literal['spectrum', 'standard', 'flexible', 'rigid']
+type BootstrapType = Literal['spectrum', 'model', 'frequentist']
+type FluxComponent = Literal['pl', 'fe', 'ba', 'hg', 'em']
+type FluxContributions = FrozenSet[FluxComponent]
+type Suffix = Literal['raw', 'sc']

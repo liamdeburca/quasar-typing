@@ -8,7 +8,17 @@ class CompositeUnit_(CompositeUnit):
     """
     @classmethod
     def _validate(cls, value: object) -> CompositeUnit:
-        if not isinstance(value, CompositeUnit):
+        if isinstance(value, str):
+            try:
+                value = CompositeUnit(value)
+                assert isinstance(value, CompositeUnit)
+            except ValueError:
+                msg = "Failed to coerce string to astropy CompositeUnit"
+                raise PydanticCustomError('validation_error', msg)
+            except AssertionError:
+                msg = "Coerced value is not an astropy CompositeUnit"
+                raise PydanticCustomError('validation_error', msg)
+        elif not isinstance(value, CompositeUnit):
             msg = f"Expected astropy CompositeUnit, got {type(value).__name__}"
             raise PydanticCustomError('validation_error', msg)
         return value

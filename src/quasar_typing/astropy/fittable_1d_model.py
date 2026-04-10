@@ -1,3 +1,4 @@
+from typing import Union
 from astropy.modeling import Fittable1DModel
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
@@ -17,3 +18,7 @@ class Fittable1DModel_(Fittable1DModel):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(cls._validate)
+    
+    def __or__(cls, other): return Union[cls, other]
+    
+    def __ror__(cls, other): return Union[other, cls]

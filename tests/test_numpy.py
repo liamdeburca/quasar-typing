@@ -373,21 +373,20 @@ class TestSortedFloatVector:
         arr = np.array([1.0, 3.0, 2.0, 4.0])
         with pytest.raises(Exception) as exc_info:
             SortedFloatVector._validate(arr)
-        assert 'Expected sorted numpy array' in str(exc_info.value)
+        assert 'Expected numpy array sorted in non-descending order' in str(exc_info.value)
     
     def test_invalid_reverse_sorted_vector(self):
         """Reverse sorted vector should raise error."""
         arr = np.array([5.0, 4.0, 3.0, 2.0, 1.0])
         with pytest.raises(Exception) as exc_info:
             SortedFloatVector._validate(arr)
-        assert 'Expected sorted numpy array' in str(exc_info.value)
+        assert 'Expected numpy array sorted in non-descending order' in str(exc_info.value)
     
-    def test_invalid_duplicate_values(self):
-        """Vector with duplicate values should raise error."""
+    def test_valid_duplicate_values(self):
+        """Vector with duplicate values should pass (non-descending order allows duplicates)."""
         arr = np.array([1.0, 2.0, 2.0, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            SortedFloatVector._validate(arr)
-        assert 'Expected sorted numpy array' in str(exc_info.value)
+        result = SortedFloatVector._validate(arr)
+        assert result.size == 4
     
     def test_valid_single_element(self):
         """Single element array should pass validation."""

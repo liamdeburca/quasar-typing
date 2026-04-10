@@ -29,8 +29,8 @@ class LineList(DataFrame):
             if col not in value.columns
         ]
         if len(missing_columns) > 0:
-            msg = "Line list DataFrame is missing required columns: "
-            msg += ", ".join(missing_columns)
+            cols = ", ".join(missing_columns)
+            msg = f"Line list DataFrame is missing required columns: {cols}"
             raise PydanticCustomError('validation_error', msg)
 
         return value
