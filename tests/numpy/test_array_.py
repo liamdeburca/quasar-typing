@@ -2,7 +2,6 @@
 
 import pytest
 import numpy as np
-from numpy import floating, integer, bool_
 
 from quasar_typing.numpy import (
     FloatArray, FloatVector, FloatMatrix, FloatCube,

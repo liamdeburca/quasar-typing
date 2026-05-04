@@ -1,11 +1,13 @@
-from typing import Union, TypeVar, Any
+from typing import TypeVar, Any
 from astropy.modeling import CompoundModel
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
+from .utils.model_meta import _ModelMeta_
+
 T = TypeVar('T')
 
-class CompoundModel_[T](CompoundModel):
+class CompoundModel_[T](CompoundModel, metaclass=_ModelMeta_):
     """
     astropy.modeling.CompoundModel with support for type parameter.
     
@@ -33,15 +35,11 @@ class CompoundModel_[T](CompoundModel):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(cls._validate)
-    
-    def __or__(cls, other): return Union[cls, other]
-    
-    def __ror__(cls, other): return Union[other, cls]
-    
+        
     def __class_getitem__(cls, subtypes: type | tuple[type, ...]) -> type['CompoundModel_[T]']:
         """Create a typed CompoundModel_ for type checking and validation."""
-        if not isinstance(subtypes, tuple):
-            subtypes = (subtypes,)
+        # if not isinstance(subtypes, tuple):
+        #     subtypes = (subtypes,)
 
         class TypedCompoundModel_(CompoundModel_):
             _model_type = subtypes

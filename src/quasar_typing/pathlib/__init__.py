@@ -22,6 +22,9 @@ __all__ = [
 
     'AnyAbsolutePKLPath', 'NewAbsolutePKLPath', 'AbsolutePKLPath',
     'AnyRelativePKLPath', 'NewRelativePKLPath', 'RelativePKLPath',
+
+    'AnyAbsoluteLogPath', 'NewAbsoluteLogPath', 'AbsoluteLogPath',
+    'AnyRelativeLogPath', 'NewRelativeLogPath', 'RelativeLogPath',
 ]
 
 from .path import Path_
@@ -123,3 +126,15 @@ _doc: str = "relative path (str or pathlib.Path) to {} PKL file"
 AnyRelativePKLPath = Path_[_doc.format('any'), False, None, '.pkl']
 NewRelativePKLPath = Path_[_doc.format('new'), False, False, '.pkl']
 RelativePKLPath = Path_[_doc.format('existing'), False, True, '.pkl']
+
+### Logs
+
+_doc: str = "absolute path (str or pathlib.Path) to {} log file"
+AnyAbsoluteLogPath = Path_[_doc.format('any'), True, None, '.log']
+NewAbsoluteLogPath = Path_[_doc.format('new'), True, False, '.log']
+AbsoluteLogPath = Path_[_doc.format('existing'), True, True, '.log']
+
+_doc: str = "relative path (str or pathlib.Path) to {} log file"
+AnyRelativeLogPath = Path_[_doc.format('any'), False, None, '.log']
+NewRelativeLogPath = Path_[_doc.format('new'), False, False, '.log']
+RelativeLogPath = Path_[_doc.format('existing'), False, True, '.log']

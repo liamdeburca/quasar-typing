@@ -1,7 +1,12 @@
+from typing import Self
 from numpy import ndarray, issubdtype, isfinite, invert
 from numpy.typing import NDArray
 from pydantic_core import PydanticCustomError
-from pydantic_core.core_schema import no_info_plain_validator_function
+from pydantic_core.core_schema import (
+    no_info_plain_validator_function,
+    union_schema,
+    is_instance_schema,
+)
 
 class Array_(NDArray):
     """
@@ -14,7 +19,7 @@ class Array_(NDArray):
     _check_is_sorted: bool = False
 
     @classmethod
-    def _validate(cls, value: object) -> NDArray:
+    def _validate(cls, value: object) -> Self:
         msg = f"{cls.__doc__} // "
         if not isinstance(value, ndarray):
             msg += f"Expected numpy array, got {type(value)}"
@@ -40,12 +45,14 @@ class Array_(NDArray):
             msg += "Expected numpy array sorted in non-descending order, \
                 got unsorted array"
             raise PydanticCustomError('validation_error', msg)
-        
         return value
     
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        return no_info_plain_validator_function(cls._validate)
+        return union_schema([
+            is_instance_schema(ndarray),
+            no_info_plain_validator_function(cls._validate),
+        ])
     
     @classmethod
     def __class_getitem__(cls, specs) -> type['Array_']:

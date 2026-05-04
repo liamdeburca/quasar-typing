@@ -1,17 +1,15 @@
-from astropy.modeling import Model
+from logging import FileHandler
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
-from .utils.model_meta import _ModelMeta_
-
-class Model_(Model, metaclass=_ModelMeta_):
+class FileHandler_(FileHandler):
     """
-    astropy.modeling.Model
+    logging.FileHandler
     """
     @classmethod
-    def _validate(cls, value: object) -> Model:
-        if not isinstance(value, Model):
-            msg = f"Expected astropy Model, got {type(value).__name__}"
+    def _validate(cls, value: object) -> FileHandler:
+        if not isinstance(value, FileHandler):
+            msg = f"Expected logging.FileHandler, got {type(value).__name__}"
             raise PydanticCustomError('validation_error', msg)
         return value
     

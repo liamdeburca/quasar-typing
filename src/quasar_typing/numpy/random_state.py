@@ -9,8 +9,12 @@ class RandomState_(RandomState):
     @classmethod
     def _validate(cls, value: object) -> RandomState:
         if not isinstance(value, RandomState):
-            msg = f"Expected numpy RandomState, got {type(value).__name__}"
-            raise PydanticCustomError('validation_error', msg)
+            try:
+                value = RandomState(value)
+            except Exception as e:
+                msg = f"Tried to coerce value of type {type(value).__name__} " \
+                    f"to {cls.__name__}, but got error: {e}"
+                raise PydanticCustomError('validation_error', msg)
         return value
     
     @classmethod

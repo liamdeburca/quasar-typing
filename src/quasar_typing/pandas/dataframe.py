@@ -8,8 +8,11 @@ class DataFrame_(DataFrame):
     """
     @classmethod
     def _validate(cls, value: object) -> DataFrame:
-        if not isinstance(value, DataFrame):
-            msg = f"Expected pandas DataFrame, got {type(value).__name__}"
+        try:
+            value = DataFrame(value)
+        except Exception as e:
+            msg = f"Tried to coerce value of type {type(value).__name__} " \
+                f"to pandas.DataFrame, but got error: {e}"
             raise PydanticCustomError('validation_error', msg)
         return value
 
