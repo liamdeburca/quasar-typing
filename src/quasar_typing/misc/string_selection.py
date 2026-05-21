@@ -22,7 +22,7 @@ class StringSelection(set[T]):
     --------
     - Any iterable of strings is treated as a set of strings
     """
-    _string_options: tuple[str, ...] = tuple()
+    _string_options: tuple[T, ...] = ()
 
     @validate_call
     def __init__(self, selection: set[Literal['all'] | T]):
@@ -30,11 +30,25 @@ class StringSelection(set[T]):
         ** PYDANTIC VALIDATED METHOD **
         """
         self._all_in_initial_selection: bool = ('all' in selection)
-        super().__init__(
-            s
-            for s in self._string_options
-            if self._all_in_initial_selection ^ (s in selection)
-        )
+
+        if self._string_options:
+            super().__init__(
+                s
+                for s in self._string_options
+                if self._all_in_initial_selection ^ (s in selection)
+            )
+        else:
+            super().__init__(selection)
+
+    def __getstate__(self) -> dict:        
+        return {
+            '_all_in_initial_selection': self._all_in_initial_selection,
+            'vals': set(self)
+        }
+    
+    def __setstate__(self, state: dict) -> None:
+        self._all_in_initial_selection = state['_all_in_initial_selection']
+        super().__init__(state['vals'])
 
     @classmethod
     def _validate(cls, value: object) -> Self:
@@ -50,17 +64,8 @@ class StringSelection(set[T]):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(cls._validate)
-        
-    @classmethod
-    def __class_getitem__(cls, params):
-        string_options = tuple(get_args(params))
-
-        class TypedStringSelection(StringSelection):
-            _string_options = string_options
-
-        return TypedStringSelection
     
-    def __call__(self, s: str) -> bool:
+    def __call__(self, s: T) -> bool:
         """
         Checks whether a string is in the selection.
 
@@ -71,7 +76,16 @@ class StringSelection(set[T]):
 
         In other cases, use 's in string_selection'.
         """
-        return self._all_in_initial_selection ^ (s in self)
+        if self._string_options:
+            return s in self
+        else:
+            return self._all_in_initial_selection ^ (s in self)
 
     def __hash__(self) -> int:
         return hash(frozenset(self))
+
+    def to_fixed(self) -> dict[T, bool]:
+        return {
+            s: self(s)
+            for s in self._string_options
+        }

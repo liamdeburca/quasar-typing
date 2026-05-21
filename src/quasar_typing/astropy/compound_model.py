@@ -1,11 +1,11 @@
 from typing import TypeVar, Any
-from astropy.modeling import CompoundModel
+from astropy.modeling import Fittable1DModel, CompoundModel
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
 from .utils.model_meta import _ModelMeta_
 
-T = TypeVar('T')
+T = TypeVar('T', bound=Fittable1DModel)
 
 class CompoundModel_[T](CompoundModel, metaclass=_ModelMeta_):
     """
@@ -43,7 +43,7 @@ class CompoundModel_[T](CompoundModel, metaclass=_ModelMeta_):
 
         class TypedCompoundModel_(CompoundModel_):
             _model_type = subtypes
-                    
+                                
         return TypedCompoundModel_
     
     def __getitem__(self, index: Any) -> T:
