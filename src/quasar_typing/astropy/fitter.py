@@ -1,35 +1,18 @@
-from typing import Callable
+__all__ = [
+    'Fitter_',
+]
+
 from astropy.modeling.fitting import (
     Fitter, LevMarLSQFitter, DogBoxLSQFitter, TRFLSQFitter,
 )
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
-from ..numpy import FittableFloatVector
-from .fit_info import FitInfo
-from .model import Model_
-
 AVAILABLE_FITTERS: list = [
     LevMarLSQFitter,
     DogBoxLSQFitter,
     TRFLSQFitter,
 ]
-
-FitterInstance = Callable[
-    [
-        Model_, 
-        FittableFloatVector, 
-        FittableFloatVector, 
-        FittableFloatVector, 
-        bool,
-    ],
-    tuple[
-        Model_, 
-        FitInfo,
-    ]
-]
-FitterInstance.__doc__ = \
-    "convenience function wrapping the Fitter.__call__ method"
 
 class Fitter_(Fitter):
     """

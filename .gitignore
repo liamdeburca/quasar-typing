@@ -64,3 +64,6 @@ logs/
 *.log
 
 *.md
+
+grid_vector.py
+linear_grid_vector.py

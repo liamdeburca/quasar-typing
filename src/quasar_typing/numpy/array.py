@@ -24,27 +24,33 @@ class Array_(NDArray):
         if not isinstance(value, ndarray):
             msg += f"Expected numpy array, got {type(value)}"
             raise PydanticCustomError('validation_error', msg)
+        
         if cls._dtype is not None and not issubdtype(value.dtype, cls._dtype):
             msg += f'Expected numpy array of dtype {cls._dtype}, \
                 got {value.dtype}'
             raise PydanticCustomError('validation_error', msg)
+        
         if cls._ndim is not None and value.ndim != cls._ndim:
             msg += f'Expected numpy array of ndim {cls._ndim}, \
                 got {value.ndim}'
             raise PydanticCustomError('validation_error', msg)
+        
         if cls._check_finite and not (mask := isfinite(value)).all():
             non_finite_count: int = invert(mask).sum()
             msg += f"Expected numpy array with finite values, \
                 got array with {non_finite_count} non-finite values"
             raise PydanticCustomError('validation_error', msg)
+        
         if cls._check_has_elements and not value.size > 0:
             msg += "Expected numpy array with at least one element, \
                 got an empty array"
             raise PydanticCustomError('validation_error', msg)
+        
         if cls._check_is_sorted and not (value[:-1] <= value[1:]).all():
             msg += "Expected numpy array sorted in non-descending order, \
                 got unsorted array"
             raise PydanticCustomError('validation_error', msg)
+        
         return value
     
     @classmethod
