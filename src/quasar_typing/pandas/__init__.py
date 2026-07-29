@@ -1,4 +1,3 @@
-__all__ = ["DataFrame_", "LineList"]
+__all__ = ["DataFrame_"]
 
 from .dataframe import DataFrame_
-from .linelist import LineList

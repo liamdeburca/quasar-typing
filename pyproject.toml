@@ -75,3 +75,9 @@ python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
+
+[tool.ruff]
+line-length = 79
+
+[lint.pyupgrade]
+keep-runtime-typing = true

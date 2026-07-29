@@ -67,3 +67,4 @@ logs/
 
 grid_vector.py
 linear_grid_vector.py
+sorted_vectors/

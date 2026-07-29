@@ -4,18 +4,20 @@ from pydantic_core.core_schema import no_info_plain_validator_function
 
 from .utils.model_meta import _ModelMeta_
 
+
 class Fittable1DModel_(Fittable1DModel, metaclass=_ModelMeta_):
     """
     astropy.modeling.Fittable1DModel
     """
+
     @classmethod
     def _validate(cls, value: object) -> Fittable1DModel:
         if not isinstance(value, Fittable1DModel):
             msg = f"Expected astropy Fittable1DModel, \
                 got {type(value).__name__}"
-            raise PydanticCustomError('validation_error', msg)
+            raise PydanticCustomError("validation_error", msg)
         return value
-    
+
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(cls._validate)
