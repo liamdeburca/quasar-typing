@@ -1,290 +1,455 @@
-"""Unit tests for FittableArray_ type aliases (finite + non-empty checks)."""
+"""Test FittableArray_ type validation using pydantic validate_call."""
 
-import pytest
 import numpy as np
+import pytest
+from pydantic import TypeAdapter, ValidationError, validate_call
+from pydantic_core import PydanticCustomError
 
 from quasar_typing.numpy import (
-    FittableFloatArray, FittableFloatVector, FittableFloatMatrix, FittableFloatCube,
+    FittableFloatArray,
+    FittableFloatCube,
+    FittableFloatMatrix,
+    FittableFloatVector,
 )
 
+# ============================================================================
+# FittableFloatArray Tests
+# ============================================================================
 
-class TestFittableFloatArray:
-    """Test FittableArray_ validation for floating point arrays."""
-    
-    def test_valid_fittable_array(self):
-        """Valid fittable array with finite values should pass validation."""
-        arr = np.array([1.0, 2.0, 3.0])
-        result = FittableFloatArray._validate(arr)
-        assert isinstance(result, np.ndarray)
-        np.testing.assert_array_equal(result, arr)
-    
-    def test_valid_fittable_array_2d(self):
-        """Valid 2D fittable array should pass validation."""
-        arr = np.array([[1.0, 2.0], [3.0, 4.0]])
-        result = FittableFloatArray._validate(arr)
-        assert result.ndim == 2
-    
-    def test_valid_fittable_array_3d(self):
-        """Valid 3D fittable array should pass validation."""
-        arr = np.array([[[1.0, 2.0, 3.0]]])
-        result = FittableFloatArray._validate(arr)
+def test_fittable_float_array_valid(float_1d_basic):
+    """Valid fittable array with finite values should pass."""
+    result = TypeAdapter(FittableFloatArray).validate_python(float_1d_basic)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_array_valid_2d(float_2d_basic):
+    """Valid 2D fittable array should pass validation."""
+    result = TypeAdapter(FittableFloatArray).validate_python(float_2d_basic)
+    assert result.ndim == 2
+
+
+def test_fittable_float_array_valid_3d(float_3d_basic):
+    """Valid 3D fittable array should pass validation."""
+    result = TypeAdapter(FittableFloatArray).validate_python(float_3d_basic)
+    assert result.ndim == 3
+
+
+def test_fittable_float_array_valid_negative(float_1d_negative):
+    """Negative values should pass as long as they're finite."""
+    result = TypeAdapter(FittableFloatArray).validate_python(float_1d_negative)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_array_valid_zero_values():
+    """Zero values should pass."""
+    arr = np.array([0.0, 0.0, 0.0])
+    result = TypeAdapter(FittableFloatArray).validate_python(arr)
+    np.testing.assert_array_equal(result, arr)
+
+
+def test_fittable_float_array_valid_very_large():
+    """Very large but finite values should pass."""
+    arr = np.array([1e100, 1e200, 1e300])
+    result = TypeAdapter(FittableFloatArray).validate_python(arr)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_array_valid_very_small():
+    """Very small but finite values should pass."""
+    arr = np.array([1e-100, 1e-200, 1e-300])
+    result = TypeAdapter(FittableFloatArray).validate_python(arr)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_array_valid_mixed_signs():
+    """Mixed positive and negative finite values should pass."""
+    arr = np.array([-1e10, -1.5, 0.0, 2.3, 1e10])
+    result = TypeAdapter(FittableFloatArray).validate_python(arr)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_array_invalid_empty():
+    """Empty array should raise error."""
+    arr = np.array([])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+def test_fittable_float_array_invalid_nan():
+    """Array with NaN should raise error."""
+    arr = np.array([1.0, np.nan, 3.0])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+def test_fittable_float_array_invalid_all_nan():
+    """Array with all NaN should raise error."""
+    arr = np.array([np.nan, np.nan, np.nan])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+def test_fittable_float_array_invalid_inf():
+    """Array with positive Inf should raise error."""
+    arr = np.array([1.0, np.inf, 3.0])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+def test_fittable_float_array_invalid_neg_inf():
+    """Array with negative Inf should raise error."""
+    arr = np.array([1.0, -np.inf, 3.0])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+def test_fittable_float_array_invalid_all_inf():
+    """Array with all Inf should raise error."""
+    arr = np.array([np.inf, np.inf, np.inf])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+def test_fittable_float_array_invalid_mixed_inf_nan():
+    """Array with both Inf and NaN should raise error."""
+    arr = np.array([np.inf, np.nan, 1.0])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatArray).validate_python(arr)
+
+
+# ============================================================================
+# FittableFloatVector Tests
+# ============================================================================
+
+def test_fittable_float_vector_valid_1d(float_1d_basic):
+    """Valid 1D fittable array should pass."""
+    result = TypeAdapter(FittableFloatVector).validate_python(float_1d_basic)
+    assert result.ndim == 1
+
+
+def test_fittable_float_vector_valid_single_element(float_1d_single):
+    """Single-element fittable vector should pass."""
+    result = TypeAdapter(FittableFloatVector).validate_python(float_1d_single)
+    assert result.size == 1
+
+
+def test_fittable_float_vector_valid_large():
+    """Large fittable vector should pass."""
+    arr = np.random.rand(1000).astype(np.float64)
+    result = TypeAdapter(FittableFloatVector).validate_python(arr)
+    assert result.ndim == 1
+    assert result.size == 1000
+
+
+def test_fittable_float_vector_invalid_empty():
+    """Empty fittable vector should raise error."""
+    arr = np.array([])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatVector).validate_python(arr)
+
+
+def test_fittable_float_vector_invalid_2d():
+    """2D array should not be accepted as FittableFloatVector."""
+    arr = np.array([[1.0, 2.0], [3.0, 4.0]])
+    with pytest.raises(ValidationError):
+        TypeAdapter(FittableFloatVector).validate_python(arr)
+
+
+def test_fittable_float_vector_invalid_nan():
+    """FittableFloatVector with NaN should raise error."""
+    arr = np.array([1.0, 2.0, np.nan])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatVector).validate_python(arr)
+
+
+def test_fittable_float_vector_invalid_inf():
+    """FittableFloatVector with Inf should raise error."""
+    arr = np.array([1.0, 2.0, np.inf])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatVector).validate_python(arr)
+
+
+# ============================================================================
+# FittableFloatMatrix Tests
+# ============================================================================
+
+def test_fittable_float_matrix_valid_2d(float_2d_basic):
+    """Valid 2D fittable array should pass."""
+    result = TypeAdapter(FittableFloatMatrix).validate_python(float_2d_basic)
+    assert result.ndim == 2
+
+
+def test_fittable_float_matrix_valid_rectangular(float_2d_rectangular):
+    """Rectangular 2D fittable array should pass."""
+    result = TypeAdapter(FittableFloatMatrix).validate_python(float_2d_rectangular)
+    assert result.ndim == 2
+    assert result.shape == (2, 3)
+
+
+def test_fittable_float_matrix_valid_single_row():
+    """2D array with single row should pass."""
+    arr = np.array([[1.0, 2.0, 3.0]])
+    result = TypeAdapter(FittableFloatMatrix).validate_python(arr)
+    assert result.ndim == 2
+    assert result.shape == (1, 3)
+
+
+def test_fittable_float_matrix_valid_single_column():
+    """2D array with single column should pass."""
+    arr = np.array([[1.0], [2.0], [3.0]])
+    result = TypeAdapter(FittableFloatMatrix).validate_python(arr)
+    assert result.ndim == 2
+    assert result.shape == (3, 1)
+
+
+def test_fittable_float_matrix_invalid_empty():
+    """Empty matrix should raise error."""
+    arr = np.zeros((0, 0))
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatMatrix).validate_python(arr)
+
+
+def test_fittable_float_matrix_invalid_1d():
+    """1D array should not be accepted as FittableFloatMatrix."""
+    arr = np.array([1.0, 2.0, 3.0])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatMatrix).validate_python(arr)
+
+
+def test_fittable_float_matrix_invalid_3d():
+    """3D array should not be accepted as FittableFloatMatrix."""
+    arr = np.ones((2, 3, 4))
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatMatrix).validate_python(arr)
+
+
+def test_fittable_float_matrix_invalid_nan():
+    """Matrix with NaN should raise error."""
+    arr = np.array([[1.0, 2.0], [np.nan, 4.0]])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatMatrix).validate_python(arr)
+
+
+def test_fittable_float_matrix_invalid_inf():
+    """Matrix with Inf should raise error."""
+    arr = np.array([[1.0, np.inf], [3.0, 4.0]])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatMatrix).validate_python(arr)
+
+
+# ============================================================================
+# FittableFloatCube Tests
+# ============================================================================
+
+def test_fittable_float_cube_valid_3d(float_3d_basic):
+    """Valid 3D fittable array should pass."""
+    result = TypeAdapter(FittableFloatCube).validate_python(float_3d_basic)
+    assert result.ndim == 3
+
+
+def test_fittable_float_cube_valid_single_element(float_3d_single_element):
+    """3D array with single element should pass."""
+    result = TypeAdapter(FittableFloatCube).validate_python(float_3d_single_element)
+    assert result.ndim == 3
+    assert result.size == 1
+
+
+def test_fittable_float_cube_valid_various_shapes():
+    """Various 3D shapes should pass."""
+    for shape in [(2, 3, 4), (5, 5, 5), (1, 10, 10)]:
+        arr = np.ones(shape, dtype=np.float64)
+        result = TypeAdapter(FittableFloatCube).validate_python(arr)
         assert result.ndim == 3
-    
-    def test_valid_negative_values(self):
-        """Negative values should pass as long as they're finite."""
-        arr = np.array([-1.0, -2.0, -3.0])
-        result = FittableFloatArray._validate(arr)
-        assert isinstance(result, np.ndarray)
-    
-    def test_valid_zero_values(self):
-        """Zero values should pass."""
-        arr = np.array([0.0, 0.0, 0.0])
-        result = FittableFloatArray._validate(arr)
-        np.testing.assert_array_equal(result, arr)
-    
-    def test_valid_very_large_finite_values(self):
-        """Very large but finite values should pass."""
-        arr = np.array([1e100, 1e200, 1e300])
-        result = FittableFloatArray._validate(arr)
-        assert isinstance(result, np.ndarray)
-    
-    def test_valid_very_small_finite_values(self):
-        """Very small but finite values should pass."""
-        arr = np.array([1e-100, 1e-200, 1e-300])
-        result = FittableFloatArray._validate(arr)
-        assert isinstance(result, np.ndarray)
-    
-    def test_invalid_non_array_input(self):
-        """Non-array input should raise error."""
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate([1.0, 2.0, 3.0])
-        assert 'Expected numpy array' in str(exc_info.value)
-    
-    def test_invalid_empty_array(self):
-        """Empty array should raise error."""
-        arr = np.array([])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with at least one element' in str(exc_info.value)
-    
-    def test_invalid_empty_2d_array(self):
-        """Empty 2D array should raise error."""
-        arr = np.empty((0, 5))
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with at least one element' in str(exc_info.value)
-    
-    def test_invalid_empty_3d_array(self):
-        """Empty 3D array should raise error."""
-        arr = np.empty((0, 2, 3))
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with at least one element' in str(exc_info.value)
-    
-    def test_invalid_array_with_single_nan(self):
-        """Array with single NaN value should raise error."""
-        arr = np.array([1.0, np.nan, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-        assert '1 non-finite' in str(exc_info.value)
-    
-    def test_invalid_array_with_single_inf(self):
-        """Array with single inf value should raise error."""
-        arr = np.array([1.0, np.inf, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-        assert '1 non-finite' in str(exc_info.value)
-    
-    def test_invalid_array_with_single_neg_inf(self):
-        """Array with single negative inf value should raise error."""
-        arr = np.array([1.0, -np.inf, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-        assert '1 non-finite' in str(exc_info.value)
-    
-    def test_invalid_array_with_multiple_nans(self):
-        """Array with multiple NaN values should report count."""
-        arr = np.array([np.nan, 2.0, np.nan, 4.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        error_msg = str(exc_info.value)
-        assert 'Expected numpy array with finite values' in error_msg
-        assert '2 non-finite' in error_msg
-    
-    def test_invalid_array_with_multiple_non_finite_types(self):
-        """Array with mixed non-finite values should report total count."""
-        arr = np.array([1.0, np.nan, np.inf, -np.inf, 5.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        error_msg = str(exc_info.value)
-        assert 'Expected numpy array with finite values' in error_msg
-        assert '3 non-finite' in error_msg
-    
-    def test_invalid_all_nan_array(self):
-        """Array with all NaN values should raise error."""
-        arr = np.array([np.nan, np.nan, np.nan])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        error_msg = str(exc_info.value)
-        assert 'Expected numpy array with finite values' in error_msg
-        assert '3 non-finite' in error_msg
-    
-    def test_invalid_2d_array_with_nan(self):
-        """2D array with any NaN should fail."""
-        arr = np.array([[1.0, 2.0], [np.nan, 4.0]])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-    
-    def test_invalid_integer_array(self):
-        """Integer array should fail dtype check."""
-        arr = np.array([1, 2, 3])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'Expected numpy array of dtype' in str(exc_info.value)
-    
-    def test_validation_order_empty_before_finite(self):
-        """Empty check should happen before finite check."""
-        # Empty array should fail with 'at least one element' error, not finite error
-        arr = np.array([])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatArray._validate(arr)
-        assert 'at least one element' in str(exc_info.value)
+        assert result.shape == shape
 
 
-class TestFittableFloatVector:
-    """Test FittableArray_ validation for 1D floating point arrays."""
-    
-    def test_valid_fittable_vector(self):
-        """Valid fittable 1D array should pass validation."""
-        arr = np.array([1.0, 2.0, 3.0])
-        result = FittableFloatVector._validate(arr)
-        assert result.ndim == 1
-        assert result.size == 3
-    
-    def test_valid_single_element_vector(self):
-        """Single element vector should pass."""
-        arr = np.array([42.0])
-        result = FittableFloatVector._validate(arr)
-        assert result.ndim == 1
-        assert result.size == 1
-    
-    def test_invalid_empty_vector(self):
-        """Empty vector should raise error."""
-        arr = np.array([])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatVector._validate(arr)
-        assert 'Expected numpy array with at least one element' in str(exc_info.value)
-    
-    def test_invalid_vector_with_nan(self):
-        """Vector with NaN should raise error."""
-        arr = np.array([1.0, np.nan, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatVector._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-    
-    def test_invalid_vector_with_inf(self):
-        """Vector with inf should raise error."""
-        arr = np.array([1.0, np.inf, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatVector._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-    
-    def test_invalid_2d_array(self):
-        """2D array should fail ndim check."""
-        arr = np.array([[1.0, 2.0], [3.0, 4.0]])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatVector._validate(arr)
-        assert 'Expected numpy array of ndim 1' in str(exc_info.value)
-    
-    def test_invalid_3d_array(self):
-        """3D array should fail ndim check."""
-        arr = np.array([[[1.0, 2.0]]])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatVector._validate(arr)
-        assert 'Expected numpy array of ndim 1' in str(exc_info.value)
+def test_fittable_float_cube_invalid_empty():
+    """Empty 3D array should raise error."""
+    arr = np.zeros((0, 0, 0))
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatCube).validate_python(arr)
 
 
-class TestFittableFloatMatrix:
-    """Test FittableArray_ validation for 2D floating point arrays."""
-    
-    def test_valid_fittable_matrix(self):
-        """Valid fittable 2D array should pass validation."""
-        arr = np.array([[1.0, 2.0], [3.0, 4.0]])
-        result = FittableFloatMatrix._validate(arr)
-        assert result.ndim == 2
-    
-    def test_valid_rectangular_matrix(self):
-        """Rectangular matrix should pass."""
-        arr = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-        result = FittableFloatMatrix._validate(arr)
-        assert result.shape == (2, 3)
-    
-    def test_invalid_empty_matrix(self):
-        """Empty matrix should raise error."""
-        arr = np.empty((0, 5))
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatMatrix._validate(arr)
-        assert 'Expected numpy array with at least one element' in str(exc_info.value)
-    
-    def test_invalid_matrix_with_nan(self):
-        """Matrix with NaN should raise error."""
-        arr = np.array([[1.0, np.nan], [3.0, 4.0]])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatMatrix._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
-    
-    def test_invalid_1d_array(self):
-        """1D array should fail ndim check."""
-        arr = np.array([1.0, 2.0, 3.0])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatMatrix._validate(arr)
-        assert 'Expected numpy array of ndim 2' in str(exc_info.value)
-    
-    def test_invalid_3d_array(self):
-        """3D array should fail ndim check."""
-        arr = np.ones((2, 2, 2), dtype=float)
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatMatrix._validate(arr)
-        assert 'Expected numpy array of ndim 2' in str(exc_info.value)
+def test_fittable_float_cube_invalid_1d():
+    """1D array should not be accepted as FittableFloatCube."""
+    arr = np.array([1.0, 2.0, 3.0])
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatCube).validate_python(arr)
 
 
-class TestFittableFloatCube:
-    """Test FittableArray_ validation for 3D floating point arrays."""
+def test_fittable_float_cube_invalid_2d():
+    """2D array should not be accepted as FittableFloatCube."""
+    arr = np.ones((3, 4))
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatCube).validate_python(arr)
+
+
+def test_fittable_float_cube_invalid_4d():
+    """4D array should not be accepted as FittableFloatCube."""
+    arr = np.ones((2, 3, 4, 5))
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatCube).validate_python(arr)
+
+
+def test_fittable_float_cube_invalid_nan():
+    """Cube with NaN should raise error."""
+    arr = np.ones((2, 3, 4))
+    arr[1, 1, 1] = np.nan
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatCube).validate_python(arr)
+
+
+def test_fittable_float_cube_invalid_inf():
+    """Cube with Inf should raise error."""
+    arr = np.ones((2, 3, 4))
+    arr[0, 0, 0] = np.inf
+    with pytest.raises((ValidationError, PydanticCustomError)) as exc_info:
+        TypeAdapter(FittableFloatCube).validate_python(arr)
+
+
+# ============================================================================
+# Pydantic validate_call Tests
+# ============================================================================
+
+def test_validate_call_with_fittable_vector():
+    """Test validate_call with FittableFloatVector type hint."""
+    @validate_call
+    def sum_values(vec: FittableFloatVector) -> float:
+        return float(vec.sum())
     
-    def test_valid_fittable_cube(self):
-        """Valid fittable 3D array should pass validation."""
-        arr = np.array([[[1.0, 2.0]]])
-        result = FittableFloatCube._validate(arr)
-        assert result.ndim == 3
+    arr = np.array([1.0, 2.0, 3.0])
+    result = sum_values(arr)
+    assert result == 6.0
+
+
+def test_validate_call_rejects_empty_vector():
+    """validate_call should reject empty array for FittableFloatVector."""
+    @validate_call
+    def sum_values(vec: FittableFloatVector) -> float:
+        return float(vec.sum())
     
-    def test_valid_various_cube_shapes(self):
-        """Various 3D shapes should pass."""
-        for shape in [(2, 3, 4), (1, 1, 1), (5, 5, 5)]:
-            arr = np.ones(shape, dtype=float)
-            result = FittableFloatCube._validate(arr)
-            assert result.shape == shape
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        sum_values(np.array([]))
+
+
+def test_validate_call_rejects_nan_vector():
+    """validate_call should reject NaN for FittableFloatVector."""
+    @validate_call
+    def sum_values(vec: FittableFloatVector) -> float:
+        return float(vec.sum())
     
-    def test_invalid_empty_cube(self):
-        """Empty cube should raise error."""
-        arr = np.empty((0, 2, 2))
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatCube._validate(arr)
-        assert 'Expected numpy array with at least one element' in str(exc_info.value)
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        sum_values(np.array([1.0, np.nan, 3.0]))
+
+
+def test_validate_call_rejects_inf_vector():
+    """validate_call should reject Inf for FittableFloatVector."""
+    @validate_call
+    def sum_values(vec: FittableFloatVector) -> float:
+        return float(vec.sum())
     
-    def test_invalid_cube_with_inf(self):
-        """Cube with inf should raise error."""
-        arr = np.array([[[1.0, np.inf]]])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatCube._validate(arr)
-        assert 'Expected numpy array with finite values' in str(exc_info.value)
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        sum_values(np.array([1.0, np.inf, 3.0]))
+
+
+def test_validate_call_with_fittable_matrix():
+    """Test validate_call with FittableFloatMatrix type hint."""
+    @validate_call
+    def matrix_sum(mat: FittableFloatMatrix) -> float:
+        return float(mat.sum())
     
-    def test_invalid_2d_array(self):
-        """2D array should fail ndim check."""
-        arr = np.array([[1.0, 2.0], [3.0, 4.0]])
-        with pytest.raises(Exception) as exc_info:
-            FittableFloatCube._validate(arr)
-        assert 'Expected numpy array of ndim 3' in str(exc_info.value)
+    arr = np.array([[1.0, 2.0], [3.0, 4.0]])
+    result = matrix_sum(arr)
+    assert result == 10.0
+
+
+def test_validate_call_rejects_empty_matrix():
+    """validate_call should reject empty matrix for FittableFloatMatrix."""
+    @validate_call
+    def matrix_sum(mat: FittableFloatMatrix) -> float:
+        return float(mat.sum())
+    
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        matrix_sum(np.zeros((0, 0)))
+
+
+def test_validate_call_with_fittable_cube():
+    """Test validate_call with FittableFloatCube type hint."""
+    @validate_call
+    def cube_sum(cube: FittableFloatCube) -> float:
+        return float(cube.sum())
+    
+    arr = np.arange(24, dtype=np.float64).reshape(2, 3, 4)
+    result = cube_sum(arr)
+    assert result == float(np.sum(np.arange(24)))
+
+
+def test_validate_call_rejects_empty_cube():
+    """validate_call should reject empty cube for FittableFloatCube."""
+    @validate_call
+    def cube_sum(cube: FittableFloatCube) -> float:
+        return float(cube.sum())
+    
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        cube_sum(np.zeros((0, 0, 0)))
+
+
+def test_validate_call_multiple_fittable_params():
+    """validate_call should work with multiple fittable parameters."""
+    @validate_call
+    def combine_vectors(v1: FittableFloatVector, v2: FittableFloatVector) -> float:
+        return float((v1 + v2).sum())
+    
+    arr1 = np.array([1.0, 2.0, 3.0])
+    arr2 = np.array([4.0, 5.0, 6.0])
+    
+    result = combine_vectors(arr1, arr2)
+    assert result == 21.0
+
+
+def test_validate_call_rejects_if_any_param_invalid():
+    """validate_call should reject if any parameter is invalid."""
+    @validate_call
+    def combine_vectors(v1: FittableFloatVector, v2: FittableFloatVector) -> float:
+        return float((v1 + v2).sum())
+    
+    arr1 = np.array([1.0, 2.0, 3.0])
+    arr2 = np.array([4.0, np.nan, 6.0])
+    
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        combine_vectors(arr1, arr2)
+
+
+# ============================================================================
+# Type Validation Edge Cases
+# ============================================================================
+
+def test_fittable_float_array_boundary_finiteness():
+    """Test boundary values for finiteness check."""
+    # Maximum finite float
+    arr = np.array([1.7976931348623157e+308, 1.0, 2.0])
+    result = TypeAdapter(FittableFloatArray).validate_python(arr)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_vector_denormalized_numbers():
+    """Denormalized (very small) numbers should pass as finite."""
+    arr = np.array([2.2250738585072014e-308, 1e-400, 1e-320])
+    result = TypeAdapter(FittableFloatVector).validate_python(arr)
+    assert isinstance(result, np.ndarray)
+
+
+def test_fittable_float_matrix_single_value():
+    """Single value matrix should pass."""
+    arr = np.array([[42.0]])
+    result = TypeAdapter(FittableFloatMatrix).validate_python(arr)
+    assert result.ndim == 2
+    assert result.shape == (1, 1)
+
+
+def test_fittable_float_cube_single_value():
+    """Single value cube should pass."""
+    arr = np.array([[[42.0]]])
+    result = TypeAdapter(FittableFloatCube).validate_python(arr)
+    assert result.ndim == 3
+    assert result.shape == (1, 1, 1)

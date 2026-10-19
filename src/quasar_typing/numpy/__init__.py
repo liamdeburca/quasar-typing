@@ -1,8 +1,10 @@
 __all__ = [
+    "Array",
     "BoolArray",
     "BoolCube",
     "BoolMatrix",
     "BoolVector",
+    "CoordsTuple",
     "FittableCoordsTuple",
     "FittableFloatArray",
     "FittableFloatCube",
@@ -16,200 +18,103 @@ __all__ = [
     "IntCube",
     "IntMatrix",
     "IntVector",
-    "RandomState_",
+    "RandomStateType",
     "SortedFloatVector",
     "SortedIntVector",
     "SpectrumCoordsTuple",
-    "StrictRandomState_",
+    "StrictRandomStateType",
 ]
-from typing import ClassVar, Literal
+from typing import Annotated
 
-from numpy import bool_, floating, integer
+from numpy import bool_, float64, int64
 
-from .array import Array_
-from .coords_tuple import CoordsTuple
-from .random_state import RandomState_, StrictRandomState_
+from quasar_typing.astropy import QuantityType
+
+from .array import (
+    Array,
+    BoolArray,
+    FloatingArray,
+    IntegerArray,
+    all_same_shape,
+    has_elements,
+    is_sorted,
+    only_finites,
+)
+from .random import RandomStateType, StrictRandomStateType
+
+type CoordsTuple = Annotated[
+    tuple[
+        FloatVector | QuantityType, 
+        FloatVector | QuantityType, 
+        FloatVector | QuantityType,
+    ],
+    all_same_shape,
+]
 
 # Float Arrays
 
-class FloatArray(Array_):
-    """
-    numpy.ndarray (floating-point dtype)
+type FloatArray = FloatingArray[tuple, float64]
+type FloatVector = FloatingArray[tuple[int], float64]
+type FloatMatrix = FloatingArray[tuple[int, int], float64]
+type FloatCube = FloatingArray[tuple[int, int, int], float64]
 
-    Wrapper that automatically coerces input to floating-point arrays.
-    """
-    _coerce: ClassVar[Literal[True]] = True
-    _dtype: ClassVar[type] = floating
-
-class FloatVector(FloatArray):
-    """
-    numpy.ndarray (1D, floating-point dtype)
-
-    1-dimensional array of floating-point values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[1]] = 1
-
-class FloatMatrix(FloatArray):
-    """
-    numpy.ndarray (2D, floating-point dtype)
-
-    2-dimensional array of floating-point values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[2]] = 2
-
-class FloatCube(FloatArray):
-    """
-    numpy.ndarray (3D, floating-point dtype)
-
-    3-dimensional array of floating-point values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[3]] = 3
-
-class SpectrumCoordsTuple(CoordsTuple[FloatArray]):
-    """
-    tuple of numpy.ndarray (floating-point dtype)
-
-    2-tuple of 1D floating-point arrays for spectrum coordinates (e.g.,
-    wavelength and flux).
-    """
+type SpectrumCoordsTuple = Annotated[
+    tuple[FloatVector, FloatVector, FloatVector],
+    all_same_shape,
+]
 
 # Int Arrays
 
-class IntArray(Array_):
-    """
-    numpy.ndarray (integer dtype)
-
-    Wrapper that automatically coerces input to integer arrays.
-    """
-    _coerce: ClassVar[Literal[True]] = True
-    _dtype: ClassVar[type] = integer
-
-class IntVector(IntArray):
-    """
-    numpy.ndarray (1D, integer dtype)
-
-    1-dimensional array of integer values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[1]] = 1
-
-class IntMatrix(IntArray):
-    """
-    numpy.ndarray (2D, integer dtype)
-
-    2-dimensional array of integer values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[2]] = 2
-
-class IntCube(IntArray):
-    """
-    numpy.ndarray (3D, integer dtype)
-
-    3-dimensional array of integer values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[3]] = 3
+type IntArray = IntegerArray[tuple, int64]
+type IntVector = IntegerArray[tuple[int], int64]
+type IntMatrix = IntegerArray[tuple[int, int], int64]
+type IntCube = IntegerArray[tuple[int, int, int], int64]
 
 # Bool Arrays
 
-class BoolArray(Array_):
-    """
-    numpy.ndarray (boolean dtype)
-
-    Wrapper that automatically coerces input to boolean arrays.
-    """
-    _coerce: ClassVar[Literal[True]] = True
-    _dtype: ClassVar[type] = bool_
-
-class BoolVector(BoolArray):
-    """
-    numpy.ndarray (1D, boolean dtype)
-
-    1-dimensional array of boolean values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[1]] = 1
-
-class BoolMatrix(BoolArray):
-    """
-    numpy.ndarray (2D, boolean dtype)
-
-    2-dimensional array of boolean values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[2]] = 2
-
-class BoolCube(BoolArray):
-    """
-    numpy.ndarray (3D, boolean dtype)
-
-    3-dimensional array of boolean values with automatic coercion.
-    """
-    _ndim: ClassVar[Literal[3]] = 3
+type BoolVector = BoolArray[tuple[int], bool_]
+type BoolMatrix = BoolArray[tuple[int, int], bool_]
+type BoolCube = BoolArray[tuple[int, int, int], bool_]
 
 # Fittable Float Arrays
 
-class FittableFloatArray(Array_):
-    """
-    numpy.ndarray (non-empty, floating-point dtype)
+type FittableFloatArray = Annotated[
+    FloatArray,
+    has_elements,
+    only_finites,
+]
+type FittableFloatVector = Annotated[
+    FloatVector,
+    has_elements,
+    only_finites,
+]
+type FittableFloatMatrix = Annotated[
+    FloatMatrix,
+    has_elements,
+    only_finites,
+]
+type FittableFloatCube = Annotated[
+    FloatCube,
+    has_elements,
+    only_finites,
+]
 
-    Wrapper for non-empty floating-point arrays with automatic coercion.
-    Validates that array is non-empty and all values are finite.
-    """
-    _coerce: ClassVar[Literal[True]] = True
-    _dtype: ClassVar[type] = floating
-    _check_finite: ClassVar[Literal[True]] = True
-    _check_has_elements: ClassVar[Literal[True]] = True
-
-class FittableFloatVector(FittableFloatArray):
-    """
-    numpy.ndarray (1D, non-empty, floating-point dtype)
-
-    1D array of finite floating-point values for model fitting.
-    """
-    _ndim: ClassVar[Literal[1]] = 1
-
-class FittableFloatMatrix(FittableFloatArray):
-    """
-    numpy.ndarray (2D, non-empty, floating-point dtype)
-
-    2D array of finite floating-point values for model fitting.
-    """
-    _ndim: ClassVar[Literal[2]] = 2
-
-class FittableFloatCube(FittableFloatArray):
-    """
-    numpy.ndarray (3D, non-empty, floating-point dtype)
-
-    3D array of finite floating-point values for model fitting.
-    """
-    _ndim: ClassVar[Literal[3]] = 3
-
-class FittableCoordsTuple(CoordsTuple[FittableFloatArray]):
-    """
-    tuple of numpy.ndarray (non-empty, floating-point dtype)
-
-    2-tuple of non-empty finite floating-point arrays for spectrum
-    coordinates.
-    """
+type FittableCoordsTuple = Annotated[
+    tuple[FittableFloatArray, FittableFloatArray, FittableFloatArray],
+    all_same_shape,
+]
 
 # Sorted Arrays
 
-class SortedFloatVector(Array_):
-    """
-    numpy.ndarray (1D, sorted, floating-point dtype)
-
-    1D sorted floating-point array with automatic coercion. Validates
-    that values are sorted in non-descending order.
-    """
-    _coerce: ClassVar[Literal[True]] = True
-    _dtype: ClassVar[type] = floating
-    _ndim: ClassVar[Literal[1]] = 1
-    _check_finite: ClassVar[Literal[True]] = True
-    _check_has_elements: ClassVar[Literal[True]] = True
-    _check_is_sorted: ClassVar[Literal[True]] = True
-
-class SortedIntVector(SortedFloatVector):
-    """
-    numpy.ndarray (1D, sorted, integer dtype)
-
-    1D sorted integer array. Inherits sorting validation from parent.
-    """
-    _dtype: ClassVar[type] = integer
-    
+type SortedFloatVector = Annotated[
+    FloatVector,
+    only_finites,
+    has_elements,
+    is_sorted,
+]
+type SortedIntVector = Annotated[
+    IntVector,
+    only_finites,
+    has_elements,
+    is_sorted,
+]

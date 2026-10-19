@@ -1,133 +1,129 @@
-from typing import ClassVar, Self
+from typing import Any, ClassVar
 
-from numpy import array, invert, isfinite, issubdtype, ndarray, sort
-from numpy.typing import NDArray
-from pydantic_core import PydanticCustomError
-from pydantic_core.core_schema import (
-    no_info_plain_validator_function,
-)
+import numpy as np
+from pydantic import GetCoreSchemaHandler, TypeAdapter
+from pydantic_core import CoreSchema, PydanticCustomError, core_schema
+
+from ..utils import after_validator_decorator
 
 
-class Array_(NDArray):
-    """
-    numpy.ndarray
-
-    Base class for type-validated numpy arrays with automatic coercion
-    and constraint checking (dtype, shape, finite values, etc.).
-    """
-    _coerce: ClassVar[bool]
-
-    _dtype: ClassVar[type | None] = None
-    _ndim: ClassVar[int | None] = None
-
-    _check_finite: ClassVar[bool] = False
-    _check_has_elements: ClassVar[bool] = False
-    _check_is_sorted: ClassVar[bool] = False
+class Array(np.ndarray):
+    _subdtype_of: ClassVar[np.dtype | None] = None
+    _shape: ClassVar[type] = tuple
+    _dtype: ClassVar[np.dtype | None] = None
 
     @classmethod
-    def _validate_ndarray(cls, value: object) -> ndarray:
-        msg = f"{cls.__doc__} // "
-        if not isinstance(value, ndarray):
-            if cls._coerce:
-                try:
-                    value = array(
-                        value,
-                        dtype=cls._dtype,
-                        ndmin=cls._ndim or 0,
-                    )
-                except Exception as e:
-                    msg += f"Failed to coerce value to numpy array: {e}"
-                    raise PydanticCustomError("validation_error", msg)
-            else:
-                msg += f"Expected numpy array, got {type(value)}"
-                raise PydanticCustomError("validation_error", msg)
+    def validate(cls, value: Any, source_type: Any = None) -> np.ndarray:
+        try:
+            value: np.ndarray = np.asarray(value)
+        except ValueError:
+            raise PydanticCustomError(
+                "validation_error",
+                "Failed to coerce value to numpy array"
+            )
+        
+        # Check if dtype coercion is safe and do it
+        if cls._dtype is not None and value.dtype != cls._dtype:
+            if not np.can_cast(value.dtype, cls._dtype):
+                raise PydanticCustomError(
+                    "validation_error",
+                    f"Cannot safely coerce array (dtype={value.dtype}) "
+                    f"to {cls._dtype}"
+                )
+            value = value.astype(cls._dtype, copy=False)
 
+        # Check subdtype compatibility (after coercion if applicable)
+        if cls._subdtype_of is not None \
+            and not np.issubdtype(value.dtype, cls._subdtype_of):
+            raise PydanticCustomError(
+                "validation_error",
+                f"Array (dtype={value.dtype}) must be of subdtype "
+                f"{cls._subdtype_of}"
+            )
+
+        if cls._shape is not None:
+            TypeAdapter(cls._shape).validate_python(value.shape)
+        
         return value
 
     @classmethod
-    def _validate_dtype(cls, value: ndarray) -> ndarray:
-        msg = f"{cls.__doc__} // "
-        if not issubdtype(value.dtype, cls._dtype):
-            if cls._coerce:
-                try:
-                    value = value.astype(cls._dtype)
-                except Exception as e:
-                    msg += f"Failed to coerce value to numpy array of dtype {cls._dtype}: {e}"
-                    raise PydanticCustomError("validation_error", msg)
-            else:
-                msg += f"Expected numpy array of dtype {cls._dtype}, "\
-                    f"got {value.dtype}"
-                raise PydanticCustomError("validation_error", msg)
+    def __get_pydantic_core_schema__(
+        cls,
+        source_type: Any,
+        handler: GetCoreSchemaHandler,
+    ) -> CoreSchema:
+        """Get the Pydantic core schema for validation."""
+        return core_schema.no_info_plain_validator_function(
+            lambda v: cls.validate(v, source_type=source_type),
+        )
+    
 
-        return value
+    def __class_getitem__(cls, item) -> type["Array"]:
+        if len(item) == 1:
+            class TypedArray(cls):
+                _shape = item[0]
+        else:
+            if not np.issubdtype(item[1], cls._subdtype_of):
+                raise TypeError(
+                    f"Array dtype {item[1]} is not a subdtype of "
+                    f"{cls._subdtype_of}"
+                )
+            class TypedArray(cls):
+                _shape = item[0]
+                _dtype = np.dtype(item[1])
 
-    @classmethod
-    def _validate_ndim(cls, value: ndarray) -> ndarray:
-        msg = f"{cls.__doc__} // "
-        if value.ndim != cls._ndim:
-            if cls._coerce:
-                try:
-                    value = value.reshape((-1,) * cls._ndim)
-                except Exception as e:
-                    msg += f"Failed to coerce value to numpy array of ndim {cls._ndim}: {e}"
-                    raise PydanticCustomError("validation_error", msg)
-            else:
-                msg += f"Expected numpy array of ndim {cls._ndim}, "\
-                    f"got {value.ndim}"
-                raise PydanticCustomError("validation_error", msg)
+        return TypedArray
 
-        return value
+class FloatingArray(Array):
+    _subdtype_of = np.floating
 
-    @classmethod
-    def _validate_finite(cls, value: ndarray) -> ndarray:
-        msg = f"{cls.__doc__} // "
-        if not (mask := isfinite(value)).all():
-            non_finite_count: int = invert(mask).sum()
-            msg += f"Expected numpy array with finite values, "\
-                f"got array with {non_finite_count} non-finite values"
-            raise PydanticCustomError("validation_error", msg)
-        return value
+class IntegerArray(Array):
+    _subdtype_of = np.integer
 
-    @classmethod
-    def _validate_has_elements(cls, value: ndarray) -> ndarray:
-        msg = f"{cls.__doc__} // "
-        if not value.size > 0:
-            msg += "Expected numpy array with at least one element, "\
-                "got an empty array"
-            raise PydanticCustomError("validation_error", msg)
-        return value
+class BoolArray(Array):
+    _subdtype_of = np.bool_
 
-    @classmethod
-    def _validate_is_sorted(cls, value: ndarray) -> ndarray:
-        msg = f"{cls.__doc__} // "
-        if not (value[:-1] <= value[1:]).all():
-            if cls._coerce:
-                try:
-                    value = sort(value, axis=-1)
-                except Exception as e:
-                    msg += f"Failed to coerce value to sorted numpy array: {e}"
-                    raise PydanticCustomError("validation_error", msg)
-            else:
-                msg += "Expected numpy array sorted in non-descending order, "\
-                    "got unsorted array"
-                raise PydanticCustomError("validation_error", msg)
-        return value
+class StrArray(Array):
+    _subdtype_of = np.str_
 
-    @classmethod
-    def _validate(cls, value: object) -> Self:
-        value = cls._validate_ndarray(value)
-        if cls._dtype is not None:
-            value = cls._validate_dtype(value)
-        if cls._ndim is not None:
-            value = cls._validate_ndim(value)
-        if cls._check_finite:
-            value = cls._validate_finite(value)
-        if cls._check_has_elements:
-            value = cls._validate_has_elements(value)
-        if cls._check_is_sorted:
-            value = cls._validate_is_sorted(value)
-        return value
+### Validation functions
 
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source_type, handler):
-        return no_info_plain_validator_function(cls._validate)
+@after_validator_decorator
+def only_finites(value: np.ndarray) -> np.ndarray:
+    mask = np.isfinite(value)
+    n = mask.sum()
+    if n != value.size:
+        raise PydanticCustomError(
+            "validation_error",
+            f"Array contains {value.size - n} non-finite values"
+        )
+    return value
+
+
+@after_validator_decorator
+def has_elements(value: np.ndarray) -> np.ndarray:
+    if value.size == 0:
+        raise PydanticCustomError(
+            "validation_error",
+            "Array must have at least one element"
+        )
+    return value
+
+@after_validator_decorator
+def is_sorted(value: np.ndarray) -> np.ndarray:
+    if not (value[...,:-1] <= value[...,1:]).all():
+        raise PydanticCustomError(
+            "validation_error",
+            "Array is not sorted along its last axis"
+        )
+    return value
+
+@after_validator_decorator
+def all_same_shape(value: tuple[np.ndarray, ...]) -> tuple[np.ndarray, ...]:
+    shapes = [arr.shape for arr in value]
+    if not all(shape == shapes[0] for shape in shapes[1:]):
+        raise PydanticCustomError(
+            "validation_error",
+            f"All arrays must have the same shape, got: {shapes}"
+        )
+    return value
