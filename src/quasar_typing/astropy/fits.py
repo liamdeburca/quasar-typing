@@ -1,37 +1,43 @@
+__all__ = [
+    "BinTableHDUType",
+    "HDUListType",
+    "ImageHDUType",
+    "PrimaryHDUType"
+]
 
-from astropy.io import fits
+from astropy.io.fits.hdu import BinTableHDU, HDUList, ImageHDU, PrimaryHDU
 from pydantic_core.core_schema import no_info_plain_validator_function
 
 from ..utils import isinstance_func
 
 
-class HDUListType(fits.HDUList):
+class HDUListType(HDUList):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(fits.HDUList)
+            isinstance_func(HDUList)
         )
 
 
-class PrimaryHDUType(fits.PrimaryHDU):
+class PrimaryHDUType(PrimaryHDU):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(fits.PrimaryHDU)
+            isinstance_func(PrimaryHDU)
         )
 
 
-class ImageHDUType(fits.ImageHDU):
+class ImageHDUType(ImageHDU):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(fits.ImageHDU)
+            isinstance_func(ImageHDU)
         )
 
 
-class BinTableHDUType(fits.BinTableHDU):
+class BinTableHDUType(BinTableHDU):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(fits.BinTableHDU)
+            isinstance_func(BinTableHDU)
         )

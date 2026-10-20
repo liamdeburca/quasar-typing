@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from quasar_typing.scipy import OptimizeResultType
+from quasar_typing.scipy.optimize import OptimizeResultType
 
 
 class TestOptimizeResultTypeValid:

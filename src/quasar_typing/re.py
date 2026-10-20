@@ -1,13 +1,12 @@
 import re
 from typing import Annotated
 
-from pydantic_core import PydanticCustomError
-
 from .utils import after_validator_decorator
 
 
 @after_validator_decorator
 def validate_is_valid_pattern(s: str) -> str:
+    from pydantic_core import PydanticCustomError
     try:
         re.compile(s)
     except re.error:

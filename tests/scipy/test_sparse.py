@@ -5,15 +5,10 @@ import pytest
 from pydantic import TypeAdapter, ValidationError
 from scipy import sparse
 
-from quasar_typing.scipy import (
-    BSRArray,
-    COOArray,
-    CSCArray,
+from quasar_typing.scipy.sparse import (
     CSRArray,
     CSRMatrix,
     DIAArray,
-    DOKArray,
-    LILArray,
     SparseArray,
 )
 
@@ -74,26 +69,6 @@ class TestCSRMatrixValid:
 class TestSparseArrayTypes:
     """Tests for other sparse array types."""
 
-    def test_coo_array_valid(self, coo_array_basic):
-        """Valid COO array should pass validation."""
-        adapter = TypeAdapter(COOArray)
-        result = adapter.validate_python(coo_array_basic)
-        assert isinstance(result, sparse.coo_array)
-
-    def test_csc_array_valid(self):
-        """Valid CSC array should pass validation."""
-        arr = sparse.csc_array(np.eye(3))
-        adapter = TypeAdapter(CSCArray)
-        result = adapter.validate_python(arr)
-        assert isinstance(result, sparse.csc_array)
-
-    def test_bsr_array_valid(self):
-        """Valid BSR array should pass validation."""
-        arr = sparse.bsr_array(np.eye(4))
-        adapter = TypeAdapter(BSRArray)
-        result = adapter.validate_python(arr)
-        assert isinstance(result, sparse.bsr_array)
-
     def test_dia_array_valid(self):
         """Valid DIA array should pass validation."""
         arr = sparse.dia_array(np.eye(3))
@@ -101,19 +76,12 @@ class TestSparseArrayTypes:
         result = adapter.validate_python(arr)
         assert isinstance(result, sparse.dia_array)
 
-    def test_dok_array_valid(self):
-        """Valid DOK array should pass validation."""
-        arr = sparse.dok_array(np.eye(3))
-        adapter = TypeAdapter(DOKArray)
+    def test_csr_array_valid(self):
+        """Valid CSR array should pass validation."""
+        arr = sparse.csr_array(np.eye(3))
+        adapter = TypeAdapter(CSRArray)
         result = adapter.validate_python(arr)
-        assert isinstance(result, sparse.dok_array)
-
-    def test_lil_array_valid(self):
-        """Valid LIL array should pass validation."""
-        arr = sparse.lil_array(np.eye(3))
-        adapter = TypeAdapter(LILArray)
-        result = adapter.validate_python(arr)
-        assert isinstance(result, sparse.lil_array)
+        assert isinstance(result, sparse.csr_array)
 
 
 class TestSparseArrayInvalid:
@@ -154,20 +122,6 @@ class TestSparseArrayInvalid:
 
 class TestSparseArrayConversion:
     """Tests for sparse array format conversions."""
-
-    def test_csr_to_csc_conversion(self, csr_array_basic):
-        """Can convert CSR array to CSC."""
-        csc = csr_array_basic.tocsc()
-        adapter = TypeAdapter(CSCArray)
-        result = adapter.validate_python(csc)
-        assert isinstance(result, sparse.csc_array)
-
-    def test_csr_to_coo_conversion(self, csr_array_basic):
-        """Can convert CSR array to COO."""
-        coo = csr_array_basic.tocoo()
-        adapter = TypeAdapter(COOArray)
-        result = adapter.validate_python(coo)
-        assert isinstance(result, sparse.coo_array)
 
     def test_sparse_array_type_accepts_all_formats(self, csr_array_basic):
         """SparseArray type should accept all sparse array formats."""

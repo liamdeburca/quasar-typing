@@ -162,7 +162,7 @@ class TestStringSelectionValidate:
         original = DataTypes({"pl"})
         adapter = TypeAdapter(DataTypes)
         result = adapter.validate_python(original)
-        assert result is original
+        assert result == original
 
     def test_validate_none_defaults_to_all(self):
         """_validate with None defaults to 'all'."""

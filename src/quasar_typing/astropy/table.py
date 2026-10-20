@@ -1,37 +1,45 @@
+__all__ = [
+    "ColumnType",
+    "QTableType",
+    "RowType",
+    "TableType",
+]
 
-from astropy import table
+from astropy.table.column import Column
+from astropy.table.row import Row
+from astropy.table.table import QTable, Table
 from pydantic_core.core_schema import no_info_plain_validator_function
 
 from ..utils import isinstance_func
 
 
-class TableType(table.Table):
+class TableType(Table):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(table.Table)
+            isinstance_func(Table)
         )
 
 
-class QTableType(table.QTable):
+class QTableType(QTable):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(table.QTable)
+            isinstance_func(QTable)
         )
 
 
-class RowType(table.Row):
+class RowType(Row):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(table.Row)
+            isinstance_func(Row)
         )
 
 
-class ColumnType(table.Column):
+class ColumnType(Column):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(table.Column)
+            isinstance_func(Column)
         )

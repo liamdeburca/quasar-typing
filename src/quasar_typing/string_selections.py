@@ -16,13 +16,11 @@ __all__ = [
 from typing import Literal, Self, TypeVar
 
 from pydantic import validate_call
-from pydantic_core import PydanticCustomError
-from pydantic_core.core_schema import no_info_plain_validator_function
 
 T = TypeVar("T", bound=str)
 
 
-class StringSelection(set[T]):
+class StringSelection(set[Literal["all"] | T]):
     """
     Set of string values. 
 
@@ -44,7 +42,6 @@ class StringSelection(set[T]):
     >>> Colors({"all", "red"})
     Colors({"green", "blue"})
     """
-
     _string_options: tuple[T, ...] = ()
 
     @validate_call
@@ -61,7 +58,7 @@ class StringSelection(set[T]):
             super().__init__(selection)
 
 
-    def __contains__(self, s: T) -> bool:
+    def __contains__(self, s: object) -> bool:
         """
         Check if the string `s` is considered part of the selection, taking into 
         account the "all" option.
@@ -93,19 +90,22 @@ class StringSelection(set[T]):
 
     @classmethod
     def _validate(cls, value: object) -> Self:
+        from pydantic_core import PydanticCustomError
         if isinstance(value, StringSelection):
-            return value
+            return cls(value)
 
         try:
             return cls(value or {"all"})
         except ValueError:
             raise PydanticCustomError(
                 "validation_error", 
-                f"Could not coerce value to set: {value}",
+                "Could not coerce value to set: {value}",
+                {"value": value},
             )
 
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(cls._validate)
 
     def __call__(self, s: T) -> bool:

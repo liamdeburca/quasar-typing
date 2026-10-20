@@ -1,13 +1,12 @@
 import logging
 
-from pydantic_core.core_schema import no_info_plain_validator_function
-
 from .utils import isinstance_func
 
 
 class LoggerType(logging.Logger):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(logging.Logger)
         )
@@ -15,6 +14,7 @@ class LoggerType(logging.Logger):
 class FileHandlerType(logging.FileHandler):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(logging.FileHandler)
         )

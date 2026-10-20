@@ -1,20 +1,20 @@
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from pydantic import AfterValidator, BeforeValidator
-from pydantic_core import PydanticCustomError
-
 T = TypeVar("T", bound=type[Any])
 
-def before_validator_decorator(func) -> BeforeValidator:
+def before_validator_decorator(func):
+    from pydantic import BeforeValidator
     return BeforeValidator(func)
 
 
-def after_validator_decorator(func) -> AfterValidator:
+def after_validator_decorator(func):
+    from pydantic import AfterValidator
     return AfterValidator(func)
 
 
-def simple_coersion_validator(t: type) -> BeforeValidator:
+def simple_coersion_validator(t: type):
+    from pydantic_core import PydanticCustomError
     def func(value: Any) -> Any:
         try:
             return t(value)
@@ -24,10 +24,11 @@ def simple_coersion_validator(t: type) -> BeforeValidator:
                 f"Could not coerce value of type {type(value).__name__} to "
                 f"{t.__name__}"
             ) from exc
-    return BeforeValidator(func)
+    return before_validator_decorator(func)
 
 
 def isinstance_func(t: type) -> Callable[[Any], Any]:
+    from pydantic_core import PydanticCustomError
     def func(value: Any) -> Any:
         if not isinstance(value, t):
             raise PydanticCustomError(
@@ -39,5 +40,5 @@ def isinstance_func(t: type) -> Callable[[Any], Any]:
     return func
 
 
-def isinstance_validator(t: type) -> AfterValidator:
-    return AfterValidator(isinstance_func(t))
+def isinstance_validator(t: type):
+    return after_validator_decorator(isinstance_func(t))

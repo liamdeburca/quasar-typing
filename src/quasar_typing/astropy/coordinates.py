@@ -1,17 +1,20 @@
-from astropy import coordinates
-from pydantic_core import PydanticCustomError
-from pydantic_core.core_schema import no_info_plain_validator_function
+__all__ = ["SkyCoordType"]
 
-from ..utils import isinstance_func
+from astropy.coordinates.sky_coordinate import SkyCoord
 
 
-class SkyCoordType(coordinates.SkyCoord):
+class SkyCoordType(SkyCoord):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core import PydanticCustomError
+        from pydantic_core.core_schema import no_info_plain_validator_function
+
+        from ..utils import isinstance_func
+
         def _validate(v: object):
             if isinstance(v, tuple):
                 try:
-                    return coordinates.SkyCoord(*v)
+                    return SkyCoord(*v)
                 except Exception as exc:
                     raise PydanticCustomError(
                         "validation_error",
@@ -19,11 +22,11 @@ class SkyCoordType(coordinates.SkyCoord):
                     ) from exc
             if isinstance(v, dict):
                 try:
-                    return coordinates.SkyCoord(**v)
+                    return SkyCoord(**v)
                 except Exception as exc:
                     raise PydanticCustomError(
                         "validation_error",
                         f"Could not create SkyCoord from dict: {exc}",
                     ) from exc
-            return isinstance_func(coordinates.SkyCoord)(v)
+            return isinstance_func(SkyCoord)(v)
         return no_info_plain_validator_function(_validate)

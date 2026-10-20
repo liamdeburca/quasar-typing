@@ -1,22 +1,29 @@
 __all__ = ["CacheType", "LRUCacheType"]
 
-import cachetools
-from pydantic_core.core_schema import no_info_plain_validator_function
+try:
+    from cachetools import Cache, LRUCache
+except ImportError as e:
+    raise ImportError(
+        "cachetools is required to use quasar_typing.cachetools. "
+        "Install it with: pip install cachetools"
+    ) from e
 
 from .utils import isinstance_func
 
 
-class CacheType(cachetools.Cache):
+class CacheType(Cache):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
-            isinstance_func(cachetools.Cache)
+            isinstance_func(Cache)
         )
 
 
-class LRUCacheType(cachetools.LRUCache):
+class LRUCacheType(LRUCache):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
-            isinstance_func(cachetools.LRUCache)
+            isinstance_func(LRUCache)
         )

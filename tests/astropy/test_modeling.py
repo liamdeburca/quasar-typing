@@ -13,19 +13,22 @@ from astropy.table import QTable, Table
 from pydantic import TypeAdapter, ValidationError
 from pydantic_core.core_schema import no_info_plain_validator_function
 
-from quasar_typing.astropy import (
+from quasar_typing.astropy.coordinates import SkyCoordType
+from quasar_typing.astropy.fits import (
     BinTableHDUType,
-    CompoundModelType,
-    Fittable1DModelType,
     HDUListType,
     ImageHDUType,
+    PrimaryHDUType,
+)
+from quasar_typing.astropy.modeling import (
+    CompoundModelType,
+    Fittable1DModelType,
     ModelType,
     ParameterType,
-    PrimaryHDUType,
-    QTableType,
+)
+from quasar_typing.astropy.table import QTableType, TableType
+from quasar_typing.astropy.units import (
     QuantityType,
-    SkyCoordType,
-    TableType,
     UnitType,
 )
 from quasar_typing.utils import isinstance_func

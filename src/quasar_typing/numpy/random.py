@@ -5,9 +5,7 @@ __all__ = [
 
 from typing import Annotated, Any
 
-from numpy.random import RandomState
-from pydantic import GetCoreSchemaHandler
-from pydantic_core import CoreSchema, PydanticCustomError, core_schema
+from numpy.random.mtrand import RandomState
 
 from ..utils import before_validator_decorator, isinstance_func
 
@@ -17,15 +15,17 @@ class StrictRandomStateType(RandomState):
     def __get_pydantic_core_schema__(
         cls,
         source_type: Any,
-        handler: GetCoreSchemaHandler,
-    ) -> CoreSchema:
-        return core_schema.no_info_plain_validator_function(
+        handler: Any,
+    ):
+        from pydantic_core.core_schema import no_info_plain_validator_function
+        return no_info_plain_validator_function(
             isinstance_func(RandomState)
         )
 
 
 @before_validator_decorator
 def coerce(value: Any) -> RandomState:
+    from pydantic_core import PydanticCustomError
     if isinstance(value, RandomState):
         return value
     

@@ -6,7 +6,7 @@ from numpy.random import RandomState
 from pydantic import TypeAdapter, ValidationError
 from pydantic_core import PydanticCustomError
 
-from quasar_typing.numpy import RandomStateType, StrictRandomStateType
+from quasar_typing.numpy.random import RandomStateType, StrictRandomStateType
 
 # ============================================================================
 # RandomStateType Tests (With Coercion)

@@ -5,7 +5,11 @@ import pytest
 from pydantic import TypeAdapter, ValidationError
 from scipy.stats import norm, rv_histogram, uniform
 
-from quasar_typing.scipy import RVContinuous, RVContinuousFrozen, RVHistogram
+from quasar_typing.scipy.stats import (
+    RVContinuous,
+    RVContinuousFrozen,
+    RVHistogram,
+)
 
 
 class TestRVContinuousFrozenValid:

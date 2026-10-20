@@ -1,47 +1,50 @@
+__all__ = [
+    "CompoundModelType", 
+    "Fittable1DModelType", 
+    "ModelType", 
+    "ParameterType",
+]
+
 from typing import Any, TypeVar, cast, get_args
 
-from astropy import modeling
-from pydantic import (
-    GetCoreSchemaHandler,
-    PydanticSchemaGenerationError,
-    TypeAdapter,
-)
-from pydantic_core import (
-    CoreSchema,
-    PydanticCustomError,
+from astropy.modeling.core import (
+    CompoundModel,
+    Fittable1DModel,
+    Model,
+    Parameter,
 )
 from pydantic_core.core_schema import no_info_plain_validator_function
 
 from ..utils import isinstance_func
 
 
-class ModelType(modeling.Model):
+class ModelType(Model):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(modeling.Model)
+            isinstance_func(Model)
         )
 
 
-class Fittable1DModelType(modeling.Fittable1DModel):
+class Fittable1DModelType(Fittable1DModel):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(modeling.Fittable1DModel)
+            isinstance_func(Fittable1DModel)
         )
 
 
-class ParameterType(modeling.Parameter):
+class ParameterType(Parameter):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
         return no_info_plain_validator_function(
-            isinstance_func(modeling.Parameter)
+            isinstance_func(Parameter)
         )
     
 T = TypeVar("T", bound=Fittable1DModelType)
 
 
-class CompoundModelType[T](modeling.CompoundModel):
+class CompoundModelType[T](CompoundModel):
     """Typed CompoundModel with submodel type validation via get_args()."""
 
     def __getitem__(self, index: Any) -> T:
@@ -55,7 +58,7 @@ class CompoundModelType[T](modeling.CompoundModel):
         cls, 
         value: Any, 
         source_type: Any = None,
-    ) -> modeling.CompoundModel:
+    ) -> CompoundModel:
         """Validate a CompoundModel, optionally checking submodel types.
 
         Parameters
@@ -76,7 +79,8 @@ class CompoundModelType[T](modeling.CompoundModel):
         PydanticCustomError
             If validation fails.
         """
-        value = isinstance_func(modeling.CompoundModel)(value)
+        from pydantic import TypeAdapter
+        value = isinstance_func(CompoundModel)(value)
         args = get_args(source_type) if source_type is not None else ()
         subtype: type = args[0] if args else Any
         [
@@ -89,8 +93,8 @@ class CompoundModelType[T](modeling.CompoundModel):
     def __get_pydantic_core_schema__(
         cls,
         source_type: Any,
-        handler: GetCoreSchemaHandler,
-    ) -> CoreSchema:
+        handler: Any,
+    ):
         return no_info_plain_validator_function(
             lambda v: cls.validate(v, source_type=source_type)
         )
@@ -98,6 +102,8 @@ class CompoundModelType[T](modeling.CompoundModel):
 
     @classmethod
     def __class_getitem__(cls, item: Any) -> Any:
+        from pydantic import PydanticSchemaGenerationError, TypeAdapter
+
         try:
             TypeAdapter(item)
         except PydanticSchemaGenerationError:

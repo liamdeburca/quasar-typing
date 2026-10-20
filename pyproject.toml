@@ -27,6 +27,9 @@ dependencies = [
     "scipy>=1.16",
     "astropy>=7.0",
     "pydantic>=2.12",
+    "pandas>=3.0.0",
+    "cachetools>=7.0.0",
+    "lazy-imports>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -58,12 +61,12 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.black]
-line-length = 100
+line-length = 79
 target-version = ["py38", "py39", "py310", "py311"]
 
 [tool.isort]
 profile = "black"
-line_length = 100
+line_length = 79
 
 [tool.pytest.ini_options]
 minversion = "7.0"

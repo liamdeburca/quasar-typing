@@ -1,17 +1,20 @@
+__all__ = ["CompositeUnitType", "QuantityType", "UnitType"]
 
-from astropy import units
-from pydantic_core import PydanticCustomError
-from pydantic_core.core_schema import no_info_plain_validator_function
+from astropy.units.core import CompositeUnit, Unit
+from astropy.units.quantity import Quantity
 
 from ..utils import isinstance_func
 
 
-class UnitType(units.Unit):
+class UnitType(Unit):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core import PydanticCustomError
+        from pydantic_core.core_schema import no_info_plain_validator_function
+
         def _validate(v: object):
             try:
-                return units.Unit(v)
+                return Unit(v)
             except Exception as exc:
                 raise PydanticCustomError(
                     "validation_error",
@@ -20,15 +23,18 @@ class UnitType(units.Unit):
         return no_info_plain_validator_function(_validate)
 
     
-class CompositeUnitType(units.CompositeUnit):
+class CompositeUnitType(CompositeUnit):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core import PydanticCustomError
+        from pydantic_core.core_schema import no_info_plain_validator_function
+
         def _validate(v: object):
-            if isinstance(v, units.CompositeUnit):
+            if isinstance(v, CompositeUnit):
                 return v
 
             try:
-                return units.CompositeUnit(v)
+                return CompositeUnit(v)
             except Exception as exc:
                 raise PydanticCustomError(
                     "validation_error",
@@ -37,9 +43,10 @@ class CompositeUnitType(units.CompositeUnit):
         return no_info_plain_validator_function(_validate)
 
 
-class QuantityType(units.Quantity):
+class QuantityType(Quantity):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
-            isinstance_func(units.Quantity),
+            isinstance_func(Quantity),
         )

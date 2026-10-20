@@ -17,37 +17,42 @@ except ImportError as exc:
 
 from typing import Annotated
 
-from emcee import EnsembleSampler, backends, moves
-from pydantic_core.core_schema import no_info_plain_validator_function
+from emcee.backends.backend import Backend
+from emcee.backends.hdf import HDFBackend
+from emcee.ensemble import EnsembleSampler
+from emcee.moves.move import Move
 
 from .utils import isinstance_func, isinstance_validator
 
 
-class MoveType(moves.Move):
+class MoveType(Move):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
-            isinstance_func(moves.Move)
+            isinstance_func(Move)
         )
 
 
 class EnsembleSamplerType(EnsembleSampler):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(EnsembleSampler)
         )
 
 
-class BackendType(backends.Backend):
+class BackendType(Backend):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
-            isinstance_func(backends.Backend)
+            isinstance_func(Backend)
         )
 
 
 type HDFBackendType = Annotated[
     BackendType,
-    isinstance_validator(backends.HDFBackend),
+    isinstance_validator(HDFBackend),
 ]
