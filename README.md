@@ -60,16 +60,9 @@ The module contains the following submodules:
 ```
 quasar-typing/
 ├── src/quasar_typing/          # Main package
-│   ├── arrays/                 # Array utilities
-│   ├── dataframe/              # DataFrame support
-│   ├── paths/                  # Path handling
-│   ├── misc/                   # Miscellaneous utilities
-│   ├── bounds.py              # Type bounds
-│   └── compound_model.py       # Compound model definitions
 ├── tests/                      # Unit tests
-├── docs/                       # Documentation
-├── pyproject.toml             # Project configuration
-└── README.md                  # This file
+├── pyproject.toml              # Project configuration
+└── README.md                   # This file
 ```
 
 ## License
