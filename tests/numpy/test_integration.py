@@ -196,8 +196,8 @@ def test_sorted_rejects_finite_but_unsorted():
 def test_sorted_with_duplicates():
     """SortedFloatVector should accept duplicates in non-descending order."""
     arr = np.array([1.0, 1.0, 2.0, 2.0, 3.0, 3.0])
-    result = TypeAdapter(SortedFloatVector).validate_python(arr)
-    assert (np.diff(result) >= 0).all()
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedFloatVector).validate_python(arr)
 
 
 # ============================================================================

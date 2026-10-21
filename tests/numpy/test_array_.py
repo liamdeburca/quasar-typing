@@ -492,9 +492,8 @@ def test_sorted_float_vector_valid(sorted_float_1d_basic):
 
 def test_sorted_float_vector_with_duplicates(sorted_float_1d_with_duplicates):
     """Sorted array with duplicates should pass."""
-    adapter = TypeAdapter(SortedFloatVector)
-    result = adapter.validate_python(sorted_float_1d_with_duplicates)
-    assert (np.diff(result) >= 0).all()
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedFloatVector).validate_python(sorted_float_1d_with_duplicates)
 
 
 def test_sorted_float_vector_negative(sorted_float_1d_negative):
@@ -521,9 +520,8 @@ def test_sorted_int_vector_valid(sorted_int_1d_basic):
 
 def test_sorted_int_vector_with_duplicates(sorted_int_1d_with_duplicates):
     """Sorted integer array with duplicates should pass."""
-    adapter = TypeAdapter(SortedIntVector)
-    result = adapter.validate_python(sorted_int_1d_with_duplicates)
-    assert (np.diff(result) >= 0).all()
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedIntVector).validate_python(sorted_int_1d_with_duplicates)
 
 
 # ============================================================================

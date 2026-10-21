@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from lazy_imports import LazyImporter
 
 _import_structure: dict[str, list[str]] = {
-    "_types": [
+    "pathlib": [
         "AnyASCIIPath",
         "AnyCSVPath",
         "AnyDirPath",

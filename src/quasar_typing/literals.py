@@ -3,7 +3,9 @@ __all__ = [
     "FWHMStrategy",
     "FluxComponent",
     "FluxContributions",
+    "LawName",
     "MCMCSamplingMethod",
+    "MapName",
     "Method",
     "Scale",
     "Suffix",
@@ -11,10 +13,13 @@ __all__ = [
 ]
 from typing import Annotated, Literal
 
-from .utils import before_validator_decorator
+from quasar_typing.utils import before_validator_decorator
 
 coerce_to_simple_string = before_validator_decorator(
     lambda s: str(s).strip().lower()
+)
+ensure_leading_dot = before_validator_decorator(
+    lambda s: s if s.startswith(".") else f".{s}"
 )
 
 type Method = Annotated[
@@ -49,4 +54,17 @@ type Suffix = Annotated[
 type MCMCSamplingMethod = Annotated[
     Literal["fisher", "uniform"],
     coerce_to_simple_string,
+]
+type MapName = Annotated[
+    Literal["sfd", "csfd"], 
+    coerce_to_simple_string,
+]
+type LawName = Annotated[
+    Literal["ccm89", "o94"],
+    coerce_to_simple_string,
+]
+type JSONExt = Annotated[
+    Literal[".json", ".yaml", ".yml", ".toml", ".toon"],
+    coerce_to_simple_string,
+    ensure_leading_dot,
 ]

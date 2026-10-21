@@ -2,16 +2,15 @@ __all__ = ["CompositeUnitType", "QuantityType", "UnitType"]
 
 from astropy.units.core import CompositeUnit, Unit
 from astropy.units.quantity import Quantity
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import no_info_plain_validator_function
 
-from ..utils import isinstance_func
+from quasar_typing.utils import isinstance_func
 
 
 class UnitType(Unit):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core import PydanticCustomError
-        from pydantic_core.core_schema import no_info_plain_validator_function
-
         def _validate(v: object):
             try:
                 return Unit(v)
@@ -26,9 +25,6 @@ class UnitType(Unit):
 class CompositeUnitType(CompositeUnit):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core import PydanticCustomError
-        from pydantic_core.core_schema import no_info_plain_validator_function
-
         def _validate(v: object):
             if isinstance(v, CompositeUnit):
                 return v
@@ -46,7 +42,6 @@ class CompositeUnitType(CompositeUnit):
 class QuantityType(Quantity):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(Quantity),
         )

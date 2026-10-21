@@ -1,13 +1,12 @@
+from numpy import diff, isfinite
+from numpy.typing import NDArray
+from pydantic_core import PydanticCustomError
 
-from numpy import ndarray
-
-from ..utils import after_validator_decorator
+from quasar_typing.utils import after_validator_decorator
 
 
 @after_validator_decorator
-def only_finites(value: ndarray) -> ndarray:
-    from numpy import isfinite
-    from pydantic_core import PydanticCustomError
+def only_finites(value: NDArray) -> NDArray:
     mask = isfinite(value)
     n = mask.sum()
     if n != value.size:
@@ -19,8 +18,7 @@ def only_finites(value: ndarray) -> ndarray:
 
 
 @after_validator_decorator
-def has_elements(value: ndarray) -> ndarray:
-    from pydantic_core import PydanticCustomError
+def has_elements(value: NDArray) -> NDArray:
     if value.size == 0:
         raise PydanticCustomError(
             "validation_error",
@@ -29,9 +27,8 @@ def has_elements(value: ndarray) -> ndarray:
     return value
 
 @after_validator_decorator
-def is_sorted(value: ndarray) -> ndarray:
-    from pydantic_core import PydanticCustomError
-    if not (value[...,:-1] <= value[...,1:]).all():
+def is_sorted(value: NDArray) -> NDArray:
+    if (diff(value, axis=-1) <= 0).any():
         raise PydanticCustomError(
             "validation_error",
             "Array is not sorted along its last axis"
@@ -39,8 +36,7 @@ def is_sorted(value: ndarray) -> ndarray:
     return value
 
 @after_validator_decorator
-def all_same_shape(value: tuple[ndarray, ...]) -> tuple[ndarray, ...]:
-    from pydantic_core import PydanticCustomError
+def all_same_shape(value: tuple[NDArray, ...]) -> tuple[NDArray, ...]:
     shapes = [arr.shape for arr in value]
     if not all(shape == shapes[0] for shape in shapes[1:]):
         raise PydanticCustomError(

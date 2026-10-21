@@ -1,16 +1,15 @@
 __all__ = ["SkyCoordType"]
 
 from astropy.coordinates.sky_coordinate import SkyCoord
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import no_info_plain_validator_function
+
+from quasar_typing.utils import isinstance_func
 
 
 class SkyCoordType(SkyCoord):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core import PydanticCustomError
-        from pydantic_core.core_schema import no_info_plain_validator_function
-
-        from ..utils import isinstance_func
-
         def _validate(v: object):
             if isinstance(v, tuple):
                 try:

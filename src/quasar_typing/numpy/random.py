@@ -6,8 +6,10 @@ __all__ = [
 from typing import Annotated, Any
 
 from numpy.random.mtrand import RandomState
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import no_info_plain_validator_function
 
-from ..utils import before_validator_decorator, isinstance_func
+from quasar_typing.utils import before_validator_decorator, isinstance_func
 
 
 class StrictRandomStateType(RandomState):
@@ -17,7 +19,6 @@ class StrictRandomStateType(RandomState):
         source_type: Any,
         handler: Any,
     ):
-        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(RandomState)
         )
@@ -25,7 +26,6 @@ class StrictRandomStateType(RandomState):
 
 @before_validator_decorator
 def coerce(value: Any) -> RandomState:
-    from pydantic_core import PydanticCustomError
     if isinstance(value, RandomState):
         return value
     

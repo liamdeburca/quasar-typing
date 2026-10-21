@@ -4,24 +4,18 @@ __all__ = [
     "RVHistogram",
 ]
 
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import no_info_plain_validator_function
 from scipy.stats import rv_continuous, rv_histogram
+from scipy.stats._distn_infrastructure import rv_continuous_frozen
 
-# Try to import from public API first, fall back to private API
-try:
-    from scipy.stats import rv_continuous_frozen
-except ImportError:
-    # Fallback to private API for older scipy versions
-    from scipy.stats._distn_infrastructure import rv_continuous_frozen
-
-from ..utils import isinstance_func
+from quasar_typing.utils import isinstance_func
 
 ### scipy.stats
 
 class RVHistogram(rv_histogram):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core import PydanticCustomError
-        from pydantic_core.core_schema import no_info_plain_validator_function
         def _validate(value: object):
             if isinstance(value, rv_histogram):
                 return value
@@ -40,7 +34,6 @@ class RVHistogram(rv_histogram):
 class RVContinuous(rv_continuous):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(rv_continuous)
         )
@@ -48,7 +41,6 @@ class RVContinuous(rv_continuous):
 class RVContinuousFrozen(rv_continuous_frozen):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(
             isinstance_func(rv_continuous_frozen)
         )

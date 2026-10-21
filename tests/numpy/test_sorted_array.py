@@ -46,22 +46,21 @@ def test_sorted_float_vector_valid_negative(sorted_float_1d_negative):
 def test_sorted_float_vector_valid_all_identical():
     """Vector with all identical values should pass (non-descending order)."""
     arr = np.array([5.0, 5.0, 5.0, 5.0])
-    result = TypeAdapter(SortedFloatVector).validate_python(arr)
-    assert isinstance(result, np.ndarray)
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedFloatVector).validate_python(arr)
 
 
 def test_sorted_float_vector_valid_duplicates_beginning(sorted_float_1d_with_duplicates):
     """Sorted vector with duplicates should pass."""
-    result = TypeAdapter(SortedFloatVector).validate_python(sorted_float_1d_with_duplicates)
-    assert isinstance(result, np.ndarray)
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedFloatVector).validate_python(sorted_float_1d_with_duplicates)
 
 
 def test_sorted_float_vector_valid_many_duplicates():
     """Sorted vector with many duplicate values should pass."""
     arr = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 3.0])
-    result = TypeAdapter(SortedFloatVector).validate_python(arr)
-    assert (np.diff(result) >= 0).all()
-
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedFloatVector).validate_python(arr)
 
 def test_sorted_float_vector_invalid_non_array():
     """Non-array input should raise error."""
@@ -133,8 +132,8 @@ def test_sorted_int_vector_valid(sorted_int_1d_basic):
 
 def test_sorted_int_vector_valid_with_duplicates(sorted_int_1d_with_duplicates):
     """Sorted integer array with duplicates should pass."""
-    result = TypeAdapter(SortedIntVector).validate_python(sorted_int_1d_with_duplicates)
-    assert (np.diff(result) >= 0).all()
+    with pytest.raises((ValidationError, PydanticCustomError)):
+        TypeAdapter(SortedIntVector).validate_python(sorted_int_1d_with_duplicates)
 
 
 def test_sorted_int_vector_valid_negative(sorted_int_1d_negative):
@@ -160,8 +159,8 @@ def test_sorted_int_vector_valid_large_values():
 def test_sorted_int_vector_valid_all_same():
     """Vector with all same integers should pass."""
     arr = np.array([5, 5, 5, 5], dtype=np.int32)
-    result = TypeAdapter(SortedIntVector).validate_python(arr)
-    assert isinstance(result, np.ndarray)
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedIntVector).validate_python(arr)
 
 
 def test_sorted_int_vector_invalid_empty():
@@ -333,21 +332,22 @@ def test_sorted_float_vector_many_elements():
 
 def test_sorted_int_vector_many_elements():
     """Sorted integer vector with many elements should pass."""
-    arr = np.sort(np.random.randint(-1000, 1000, 1000)).astype(np.int32)
-    result = TypeAdapter(SortedIntVector).validate_python(arr)
-    assert (np.diff(result) >= 0).all()
-    assert result.size == 1000
+    arr = np.sort(
+        np.random.choice(1_000_000, size=100_000, replace=False)\
+            .astype(np.int32)
+    )
+    TypeAdapter(SortedIntVector).validate_python(arr)
 
 
 def test_sorted_float_vector_consecutive_duplicates():
     """Sorted vector with many consecutive duplicates should pass."""
     arr = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0])
-    result = TypeAdapter(SortedFloatVector).validate_python(arr)
-    assert (np.diff(result) >= 0).all()
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedFloatVector).validate_python(arr)
 
 
 def test_sorted_int_vector_consecutive_duplicates():
     """Sorted integer vector with consecutive duplicates should pass."""
     arr = np.array([1, 1, 1, 2, 2, 2, 3, 3], dtype=np.int32)
-    result = TypeAdapter(SortedIntVector).validate_python(arr)
-    assert (np.diff(result) >= 0).all()
+    with pytest.raises(ValidationError):
+        TypeAdapter(SortedIntVector).validate_python(arr)

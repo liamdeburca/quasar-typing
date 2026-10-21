@@ -1,12 +1,16 @@
 from pathlib import Path
 from typing import Any
 
-from ..utils import after_validator_decorator, before_validator_decorator
+from pydantic_core import PydanticCustomError
+
+from quasar_typing.utils import (
+    after_validator_decorator,
+    before_validator_decorator,
+)
 
 
 @before_validator_decorator
 def coerce(value: Any) -> Path:
-    from pydantic_core import PydanticCustomError
     try:
         return Path(value).expanduser().resolve()
     except TypeError:
@@ -18,7 +22,6 @@ def coerce(value: Any) -> Path:
 
 @after_validator_decorator
 def exists(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if not p.exists():
         raise PydanticCustomError(
             "validation_error",
@@ -29,7 +32,6 @@ def exists(p: Path) -> Path:
 
 @after_validator_decorator
 def doesnt_exist(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.exists():
         raise PydanticCustomError(
             "validation_error",
@@ -41,7 +43,6 @@ def doesnt_exist(p: Path) -> Path:
 
 @after_validator_decorator
 def has_suffix(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix == "":
         raise PydanticCustomError(
             "validation_error",
@@ -52,7 +53,6 @@ def has_suffix(p: Path) -> Path:
 
 @after_validator_decorator
 def is_file(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if not p.is_file():
         raise PydanticCustomError(
             "validation_error",
@@ -63,7 +63,6 @@ def is_file(p: Path) -> Path:
 
 @after_validator_decorator
 def has_no_suffix(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != "":
         raise PydanticCustomError(
             "validation_error",
@@ -74,7 +73,6 @@ def has_no_suffix(p: Path) -> Path:
 
 @after_validator_decorator
 def is_dir(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if not p.is_dir():
         raise PydanticCustomError(
             "validation_error",
@@ -85,7 +83,6 @@ def is_dir(p: Path) -> Path:
 
 @after_validator_decorator
 def is_csv(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".csv":
         raise PydanticCustomError(
             "validation_error",
@@ -95,7 +92,6 @@ def is_csv(p: Path) -> Path:
 
 @after_validator_decorator
 def is_ascii(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".asc":
         raise PydanticCustomError(
             "validation_error",
@@ -106,7 +102,6 @@ def is_ascii(p: Path) -> Path:
 
 @after_validator_decorator
 def is_fits(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".fits":
         raise PydanticCustomError(
             "validation_error",
@@ -117,7 +112,6 @@ def is_fits(p: Path) -> Path:
 
 @after_validator_decorator
 def is_json(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".json":
         raise PydanticCustomError(
             "validation_error",
@@ -128,7 +122,6 @@ def is_json(p: Path) -> Path:
 
 @after_validator_decorator
 def is_yaml(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix not in {".yaml", ".yml"}:
         raise PydanticCustomError(
             "validation_error",
@@ -140,7 +133,6 @@ def is_yaml(p: Path) -> Path:
 
 @after_validator_decorator
 def is_toml(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".toml":
         raise PydanticCustomError(
             "validation_error",
@@ -152,7 +144,6 @@ def is_toml(p: Path) -> Path:
 
 @after_validator_decorator
 def is_toon(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".toon":
         raise PydanticCustomError(
             "validation_error",
@@ -163,7 +154,6 @@ def is_toon(p: Path) -> Path:
 
 @after_validator_decorator
 def is_pkl(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".pkl":
         raise PydanticCustomError(
             "validation_error",
@@ -175,7 +165,6 @@ def is_pkl(p: Path) -> Path:
 
 @after_validator_decorator
 def is_hdf5(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix not in {".h5", ".hdf5"}:
         raise PydanticCustomError(
             "validation_error",
@@ -186,7 +175,6 @@ def is_hdf5(p: Path) -> Path:
 
 @after_validator_decorator
 def is_log(p: Path) -> Path:
-    from pydantic_core import PydanticCustomError
     if p.suffix != ".log":
         raise PydanticCustomError(
             "validation_error",

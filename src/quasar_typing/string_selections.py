@@ -16,6 +16,8 @@ __all__ = [
 from typing import Literal, Self, TypeVar
 
 from pydantic import validate_call
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import no_info_plain_validator_function
 
 T = TypeVar("T", bound=str)
 
@@ -90,7 +92,6 @@ class StringSelection(set[Literal["all"] | T]):
 
     @classmethod
     def _validate(cls, value: object) -> Self:
-        from pydantic_core import PydanticCustomError
         if isinstance(value, StringSelection):
             return cls(value)
 
@@ -105,7 +106,6 @@ class StringSelection(set[Literal["all"] | T]):
 
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(cls._validate)
 
     def __call__(self, s: T) -> bool:

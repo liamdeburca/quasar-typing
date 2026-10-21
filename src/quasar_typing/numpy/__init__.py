@@ -1,17 +1,21 @@
 import sys
+from importlib import import_module
 from typing import TYPE_CHECKING
 
 from lazy_imports import LazyImporter
+
+import_module("numpy")
 
 _import_structure: dict[str, list[str]] = {
     "array": [
         "Array",
         "BoolArray",
-        "FloatArray",
+        "FloatingArray",
         "IntegerArray",
         "StrArray",
     ],
-    "_types": [
+    "array_types": [
+        "FloatArray",
         "FloatVector",
         "FloatMatrix",
         "FloatCube",
@@ -37,6 +41,10 @@ _import_structure: dict[str, list[str]] = {
         "SortedFloatVector",
         "SortedIntVector",
     ],
+    "random": [
+        "RandomStateType",
+        "StrictRandomStateType",
+    ]
 }
 
 if TYPE_CHECKING:
@@ -67,6 +75,10 @@ if TYPE_CHECKING:
         SortedFloatVector,
         SortedIntVector,
         SpectrumCoordsTuple,
+    )
+    from .random import (  # noqa: F401
+        RandomStateType,
+        StrictRandomStateType,
     )
 else:
     sys.modules[__name__] = LazyImporter(

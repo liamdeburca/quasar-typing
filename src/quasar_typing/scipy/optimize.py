@@ -3,6 +3,8 @@ import math
 from typing import Literal, Self
 
 from pydantic import validate_call
+from pydantic_core import PydanticCustomError
+from pydantic_core.core_schema import no_info_plain_validator_function
 from scipy.optimize import OptimizeResult
 
 from quasar_typing.numpy import FloatMatrix, FloatVector
@@ -60,8 +62,6 @@ class OptimizeResultType(OptimizeResult):
 
     @classmethod
     def _validate(cls, value: object) -> Self:
-        from pydantic_core import PydanticCustomError
-        
         if isinstance(value, cls):
             return value
 
@@ -90,7 +90,6 @@ class OptimizeResultType(OptimizeResult):
 
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
         return no_info_plain_validator_function(cls._validate)
 
     @property

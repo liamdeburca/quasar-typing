@@ -1,11 +1,19 @@
 import sys
+from importlib import import_module
 from typing import TYPE_CHECKING
 
 from lazy_imports import LazyImporter
 
+import_module("astropy")
+
 _import_structure: dict[str, list[str]] = {
     "coordinates": [
         "SkyCoordType",
+    ],
+    "cosmology": [
+        "CosmologyName",
+        "CosmologyType",
+        "StrictCosmologyName"
     ],
     "fits": [
         "BinTableHDUType",
@@ -32,6 +40,11 @@ _import_structure: dict[str, list[str]] = {
 
 if TYPE_CHECKING:
     from .coordinates import SkyCoordType  # noqa: F401
+    from .cosmology import (  # noqa: F401
+        CosmologyName,
+        CosmologyType,
+        StrictCosmologyName,
+    )
     from .fits import (  # noqa: F401
         BinTableHDUType,
         HDUListType,

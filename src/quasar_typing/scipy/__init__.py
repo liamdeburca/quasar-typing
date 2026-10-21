@@ -1,7 +1,10 @@
 import sys
+from importlib import import_module
 from typing import TYPE_CHECKING
 
 from lazy_imports import LazyImporter
+
+import_module("scipy")
 
 _import_structure: dict[str, list[str]] = {
     "optimize": [

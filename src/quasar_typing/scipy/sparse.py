@@ -8,6 +8,7 @@ __all__ = [
 ]
 from typing import Annotated
 
+from pydantic_core.core_schema import no_info_plain_validator_function
 from scipy.sparse import (
     csr_array,
     csr_matrix,
@@ -17,7 +18,7 @@ from scipy.sparse import (
     spmatrix,
 )
 
-from ..utils import isinstance_func, isinstance_validator
+from quasar_typing.utils import isinstance_func, isinstance_validator
 
 ### scipy.optimize.OptimizeResult
 
@@ -27,10 +28,7 @@ from ..utils import isinstance_func, isinstance_validator
 class SparseArray(sparray):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
-        return no_info_plain_validator_function(
-            isinstance_func(sparray)
-        )
+        return no_info_plain_validator_function(isinstance_func(sparray))
 
 type CSRArray = Annotated[
     SparseArray,
@@ -46,10 +44,7 @@ type DIAArray = Annotated[
 class SparseMatrix(spmatrix):
     @classmethod
     def __get_pydantic_core_schema__(cls, source_type, handler):
-        from pydantic_core.core_schema import no_info_plain_validator_function
-        return no_info_plain_validator_function(
-            isinstance_func(spmatrix)
-        )
+        return no_info_plain_validator_function(isinstance_func(spmatrix))
     
 type CSRMatrix = Annotated[
     SparseMatrix,

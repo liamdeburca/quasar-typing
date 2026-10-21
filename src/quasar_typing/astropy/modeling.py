@@ -13,9 +13,10 @@ from astropy.modeling.core import (
     Model,
     Parameter,
 )
+from pydantic import PydanticSchemaGenerationError, TypeAdapter
 from pydantic_core.core_schema import no_info_plain_validator_function
 
-from ..utils import isinstance_func
+from quasar_typing.utils import isinstance_func
 
 
 class ModelType(Model):
@@ -79,7 +80,6 @@ class CompoundModelType[T](CompoundModel):
         PydanticCustomError
             If validation fails.
         """
-        from pydantic import TypeAdapter
         value = isinstance_func(CompoundModel)(value)
         args = get_args(source_type) if source_type is not None else ()
         subtype: type = args[0] if args else Any
@@ -102,8 +102,6 @@ class CompoundModelType[T](CompoundModel):
 
     @classmethod
     def __class_getitem__(cls, item: Any) -> Any:
-        from pydantic import PydanticSchemaGenerationError, TypeAdapter
-
         try:
             TypeAdapter(item)
         except PydanticSchemaGenerationError:

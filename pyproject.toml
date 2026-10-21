@@ -18,35 +18,25 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "numpy>=1.26",
-    "scipy>=1.16",
-    "astropy>=7.0",
     "pydantic>=2.12",
-    "pandas>=3.0.0",
-    "cachetools>=7.0.0",
     "lazy-imports>=1.0.0",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov",
-    "black",
-    "flake8",
-    "isort",
-    "mypy",
-]
-docs = [
-    "sphinx",
-    "sphinx-rtd-theme",
-]
-emcee = [
-    "emcee>=3.0.0"
+complete = [
+    "numpy>=1.26",
+    "scipy>=1.16",
+    "astropy>=7.0",
+    "emcee>=3.0.0",
+    "pandas>=3.0.0",
+    "cachetools>=7.0.0",
+    "dynesty>=3.0.0",
+    "h5py>=3.0.0",
 ]
 
 [project.urls]
