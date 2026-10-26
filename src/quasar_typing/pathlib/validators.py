@@ -16,7 +16,8 @@ def coerce(value: Any) -> Path:
     except TypeError:
         raise PydanticCustomError(
             "validation_error",
-            "Value cannot be converted to a Path"
+            "Value cannot be coerced to a Path: {value}",
+            {"value": value}
         )
 
 
@@ -25,7 +26,8 @@ def exists(p: Path) -> Path:
     if not p.exists():
         raise PydanticCustomError(
             "validation_error",
-            "Path does not exist"
+            "Path does not exist: {path_str}",
+            {"path_str": str(p)}
         )
     return p
 
@@ -35,7 +37,8 @@ def doesnt_exist(p: Path) -> Path:
     if p.exists():
         raise PydanticCustomError(
             "validation_error",
-            "Path exists"
+            "Path exists: {path_str}",
+            {"path_str": str(p)}
         )
     return p
 
@@ -46,7 +49,8 @@ def has_suffix(p: Path) -> Path:
     if p.suffix == "":
         raise PydanticCustomError(
             "validation_error",
-            "Path does not have a suffix"
+            "Path does not have a suffix: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -56,7 +60,8 @@ def is_file(p: Path) -> Path:
     if not p.is_file():
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a file"
+            "Path is not a file: {path_str}",
+            {"path_str": str(p)}
         )
     return p
 
@@ -66,7 +71,8 @@ def has_no_suffix(p: Path) -> Path:
     if p.suffix != "":
         raise PydanticCustomError(
             "validation_error",
-            "Path has a suffix"
+            "Path has a suffix: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -76,7 +82,8 @@ def is_dir(p: Path) -> Path:
     if not p.is_dir():
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a directory"
+            "Path is not a directory: {path_str}",
+            {"path_str": str(p)}
         )
     return p
 
@@ -86,7 +93,8 @@ def is_csv(p: Path) -> Path:
     if p.suffix != ".csv":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a CSV file"
+            "Path is not a CSV file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -95,7 +103,8 @@ def is_ascii(p: Path) -> Path:
     if p.suffix != ".asc":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not an ASCII file"
+            "Path is not an ASCII file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -105,7 +114,8 @@ def is_fits(p: Path) -> Path:
     if p.suffix != ".fits":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a FITS file"
+            "Path is not a FITS file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -115,7 +125,8 @@ def is_json(p: Path) -> Path:
     if p.suffix != ".json":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a JSON file"
+            "Path is not a JSON file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -125,7 +136,8 @@ def is_yaml(p: Path) -> Path:
     if p.suffix not in {".yaml", ".yml"}:
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a YAML file"
+            "Path is not a YAML file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -136,7 +148,8 @@ def is_toml(p: Path) -> Path:
     if p.suffix != ".toml":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a TOML file"
+            "Path is not a TOML file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -147,7 +160,8 @@ def is_toon(p: Path) -> Path:
     if p.suffix != ".toon":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a TOON file"
+            "Path is not a TOON file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -157,7 +171,8 @@ def is_pkl(p: Path) -> Path:
     if p.suffix != ".pkl":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a PKL file"
+            "Path is not a PKL file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -168,7 +183,8 @@ def is_hdf5(p: Path) -> Path:
     if p.suffix not in {".h5", ".hdf5"}:
         raise PydanticCustomError(
             "validation_error",
-            "Path is not an HDF5 file"
+            "Path is not an HDF5 file: {path_name}",
+            {"path_name": p.name}
         )
     return p
 
@@ -178,6 +194,7 @@ def is_log(p: Path) -> Path:
     if p.suffix != ".log":
         raise PydanticCustomError(
             "validation_error",
-            "Path is not a LOG file"
+            "Path is not a LOG file: {path_name}",
+            {"path_name": p.name}
         )
     return p

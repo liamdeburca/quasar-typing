@@ -10,10 +10,12 @@ _import_structure: dict[str, list[str]] = {
     "coordinates": [
         "SkyCoordType",
     ],
-    "cosmology": [
+    "cosmology.cosmology_name": [
         "CosmologyName",
-        "CosmologyType",
         "StrictCosmologyName"
+    ],
+    "cosmology.cosmology_type": [
+        "CosmologyType"
     ],
     "fits": [
         "BinTableHDUType",

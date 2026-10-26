@@ -29,9 +29,9 @@ dependencies = [
 
 [project.optional-dependencies]
 complete = [
+    "astropy>=7.0",
     "numpy>=1.26",
     "scipy>=1.16",
-    "astropy>=7.0",
     "emcee>=3.0.0",
     "pandas>=3.0.0",
     "cachetools>=7.0.0",
