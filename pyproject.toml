@@ -25,6 +25,7 @@ classifiers = [
 dependencies = [
     "pydantic>=2.12",
     "lazy-imports>=1.0.0",
+    "pytest>=9.0.0",
 ]
 
 [project.optional-dependencies]
