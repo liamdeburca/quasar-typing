@@ -1,43 +1,40 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = [
+    "wheel", 
+    "setuptools==72.1.0", 
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "quasar-typing"
+authors = [{name = "Liam", email = "liam_deburca@me.com"}]
 version = "0.1.0"
-description = "A small Python project for Quasar typing utilities"
 readme = "README.md"
 requires-python = ">=3.12"
-license = {text = "MIT"}
-authors = [
-    {name = "Liam", email = "liam_deburca@me.com"}
-]
-keywords = ["quasar", "typing"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pydantic>=2.12",
-    "lazy-imports>=1.0.0",
-    "pytest>=9.0.0",
+    "pydantic==2.12",
+    "lazy-imports==1.2.0",
 ]
 
 [project.optional-dependencies]
-complete = [
-    "astropy>=7.0",
-    "numpy>=1.26",
-    "scipy>=1.16",
-    "emcee>=3.0.0",
-    "pandas>=3.0.0",
-    "cachetools>=7.0.0",
-    "dynesty>=3.0.0",
-    "h5py>=3.0.0",
+dev = [
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "black==26.10.1",
+    "isort==9.0.2",
+
+    "astropy==7.0",
+    "numpy==1.26",
+    "scipy==1.16",
+    "emcee==3.1.6",
+    "pandas==3.0.5",
+    "cachetools==7.0.5",
+    "dynesty==3.0.0",
+    "h5py==3.16.0",
 ]
 
 [project.urls]

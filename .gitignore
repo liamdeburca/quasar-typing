@@ -5,3 +5,5 @@ src/quasar_typing.egg-info
 .copilot
 .notes
 .vscode
+build
+dist
