@@ -1,25 +1,30 @@
 __all__ = [
+    "BalmerSeriesTemplateName",
     "BootstrapType",
     "FWHMStrategy",
     "FluxComponent",
     "FluxContributions",
+    "HostGalaxyTemplateName",
     "LawName",
+    "LineType",
     "MCMCSamplingMethod",
     "MapName",
     "Method",
+    "ModelName",
+    "ParameterName",
     "Scale",
     "Suffix",
+    "TemplateName",
     "Variant",
 ]
 from typing import Annotated, Literal
+
+from pydantic import StringConstraints
 
 from quasar_typing.utils import before_validator_decorator
 
 coerce_to_simple_string = before_validator_decorator(
     lambda s: str(s).strip().lower()
-)
-ensure_leading_dot = before_validator_decorator(
-    lambda s: s if s.startswith(".") else f".{s}"
 )
 
 type Method = Annotated[
@@ -66,5 +71,28 @@ type LawName = Annotated[
 type JSONExt = Annotated[
     Literal[".json", ".yaml", ".yml", ".toml", ".toon"],
     coerce_to_simple_string,
-    ensure_leading_dot,
+    StringConstraints(pattern="^..+"),
+]
+
+### quasar-models
+
+type ModelName = Annotated[str, StringConstraints(min_length=1)]
+type ParameterName = ModelName
+
+type TemplateName = Annotated[
+    str,
+    coerce_to_simple_string,
+    StringConstraints(min_length=1),
+]
+type BalmerSeriesTemplateName = Annotated[
+    Literal["sh1995"],
+    coerce_to_simple_string,
+]
+type HostGalaxyTemplateName = Annotated[
+    Literal["bc2003"],
+    coerce_to_simple_string,
+]
+type LineType = Annotated[
+    Literal["n", "b"],
+    coerce_to_simple_string,
 ]

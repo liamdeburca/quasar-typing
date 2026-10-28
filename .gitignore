@@ -7,3 +7,4 @@ src/quasar_typing.egg-info
 .vscode
 build
 dist
+build.sh
