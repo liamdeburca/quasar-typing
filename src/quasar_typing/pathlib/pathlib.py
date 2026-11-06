@@ -65,6 +65,12 @@ type AnyTOONPath = Annotated[AnyFilePath, validators.is_toon]
 type NewTOONPath = Annotated[NewFilePath, validators.is_toon]
 type TOONPath = Annotated[FilePath, validators.is_toon]
 
+### JSONLike
+
+type AnyJSONLikePath = AnyJSONPath | AnyYAMLPath | AnyTOMLPath | AnyTOONPath
+type NewJSONLikePath = NewJSONPath | NewYAMLPath | NewTOMLPath | NewTOONPath
+type JSONLikePath = JSONPath | YAMLPath | TOMLPath | TOONPath
+
 ### PKL
 
 type AnyPKLPath = Annotated[AnyFilePath, validators.is_pkl]

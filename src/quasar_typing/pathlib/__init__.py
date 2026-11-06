@@ -44,6 +44,9 @@ _import_structure: dict[str, list[str]] = {
         "TOMLPath",
         "TOONPath",
         "YAMLPath",
+        "JSONLikePath",
+        "NewJSONLikePath",
+        "AnyJSONLikePath",
     ],
 }
 
@@ -55,6 +58,7 @@ if TYPE_CHECKING:
         AnyFilePath,
         AnyFITSPath,
         AnyHDF5Path,
+        AnyJSONLikePath,
         AnyJSONPath,
         AnyLogPath,
         AnyPath,
@@ -69,6 +73,7 @@ if TYPE_CHECKING:
         FilePath,
         FITSPath,
         HDF5Path,
+        JSONLikePath,
         JSONPath,
         LogPath,
         NewASCIIPath,
@@ -77,6 +82,7 @@ if TYPE_CHECKING:
         NewFilePath,
         NewFITSPath,
         NewHDF5Path,
+        NewJSONLikePath,
         NewJSONPath,
         NewLogPath,
         NewPath,
